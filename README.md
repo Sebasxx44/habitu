@@ -19,7 +19,7 @@ Los módulos principales cubren negocios/sedes, catálogo, profesionales/cliente
 
 ## Desarrollo
 
-Publicación: el frontend se despliega desde `frontend` en Vercel y usa `HABITU_API_ORIGIN` (variable del servidor, origen HTTPS del backend sin `/api`). El proxy conserva autenticación e idempotencia; sin backend devuelve 503 explícito. La imagen `Dockerfile` de la raíz sirve la SPA y Laravel, junto con colas y scheduler. PostgreSQL conserva caché, locks, sesiones y trabajos en tablas `platform.runtime_*`; no requiere Redis para esta configuración.
+Publicación: el frontend se despliega desde `frontend` en Vercel y usa `HABITU_API_ORIGIN` (variable del servidor, origen HTTPS del backend sin `/api`). El proxy conserva autenticación e idempotencia; sin backend devuelve 503 explícito. Configura el mismo `HABITU_PROXY_SECRET` privado (mínimo 32 caracteres aleatorios) en ambos servidores para autenticar la IP original y conservar los límites por persona. La imagen `Dockerfile` de la raíz sirve la SPA y Laravel, junto con colas y scheduler. PostgreSQL conserva caché, locks, sesiones y trabajos en tablas `platform.runtime_*`; no requiere Redis para esta configuración.
 
 Variables del backend: `deploy/.env.example`. Ejecuta `deploy/release.sh` antes de activar tráfico (Railway lo declara en `railway.json`); si el proveedor no admite esa fase, configura `RUN_MIGRATIONS_ON_START=true`. El primer superadmin se crea con secretos `SUPERADMIN_EMAIL` y `SUPERADMIN_PASSWORD`, sin cuentas demo ni rotación automática. Conserva `APP_KEY`, la base y los archivos de `storage/app` entre despliegues. Google requiere su client ID y el dominio autorizado; Wompi requiere las cuatro llaves de producción y el webhook HTTPS `/api/v2/webhooks/wompi`.
 

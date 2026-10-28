@@ -1,7 +1,9 @@
+import { createHmac } from "node:crypto";
+import { isIP } from "node:net";
 import { env } from "node:process";
 
 // CONSTANTS
-const TIMEOUT_MS = 20000;
+const TIMEOUT_MS = 70000;
 const REQUEST_HEADERS = [
   "accept",
   "accept-language",
@@ -57,6 +59,21 @@ const backendOrigin = (): URL | null => {
   }
 };
 
+const signClientIp = (request: Request, headers: Headers): void => {
+  const secret = env.HABITU_PROXY_SECRET;
+  if (env.VERCEL !== "1" || !secret || secret.length < 32) return;
+  // Vercel overwrites this provider header; never sign a client-supplied X-Forwarded-For.
+  const ip = request.headers.get("x-vercel-forwarded-for");
+  if (!ip || isIP(ip) === 0) return;
+  const timestamp = Math.floor(Date.now() / 1000).toString();
+  headers.set("X-Habitu-Client-IP", ip);
+  headers.set("X-Habitu-Proxy-Timestamp", timestamp);
+  headers.set(
+    "X-Habitu-Proxy-Signature",
+    createHmac("sha256", secret).update(`${timestamp}\n${ip}`).digest("hex"),
+  );
+};
+
 // HANDLER
 const proxy = async (request: Request): Promise<Response> => {
   const incoming = new URL(request.url);
@@ -93,6 +110,7 @@ const proxy = async (request: Request): Promise<Response> => {
     if (value !== null) headers.set(name, value);
   }
   headers.set("Cache-Control", "no-store");
+  signClientIp(request, headers);
 
   const signal = AbortSignal.any([
     request.signal,

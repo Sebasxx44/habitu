@@ -7,7 +7,7 @@
   "fluid": true,
   "functions": {
     "api/proxy.ts": {
-      "maxDuration": 30
+      "maxDuration": 90
     }
   },
   "rewrites": [
