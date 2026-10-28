@@ -63,7 +63,7 @@ export const useNotifications = (): NotificationContextValue => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { setTheme } = useTheme();
+  const { applyAccountTheme } = useTheme();
   const navigate = useNavigate();
   // State
   const [user, setUser] = useState<User | null>(null);
@@ -75,8 +75,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (user?.preferences?.language) void i18n.changeLanguage(user.preferences.language);
-    if (user?.preferences?.theme) setTheme(user.preferences.theme);
-  }, [user?.id, user?.preferences?.language, user?.preferences?.theme, setTheme]);
+    if (user?.preferences?.theme) applyAccountTheme(user.preferences.theme);
+  }, [user?.id, user?.preferences?.language, user?.preferences?.theme, applyAccountTheme]);
 
   // Actions
   const refreshUser = useCallback(async () => {

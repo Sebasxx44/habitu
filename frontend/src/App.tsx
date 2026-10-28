@@ -134,7 +134,7 @@ const PageLoading = () => <div className="app-canvas min-h-screen p-4 sm:p-8"><d
 const App = () => {
   return (
     <MotionConfig reducedMotion="user" transition={{ duration: 0.24, ease: 'easeOut' }}>
-    <ThemeProvider defaultTheme="system" storageKey="elegantbarb-theme">
+    <ThemeProvider defaultTheme="light" storageKey="elegantbarb-theme">
       <BrowserRouter>
         <AuthProvider>
           <ToastProvider>

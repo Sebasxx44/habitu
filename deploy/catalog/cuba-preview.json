@@ -1,0 +1,80 @@
+{
+  "version": "cuba-preview-2026-10-28",
+  "checked_on": "2026-10-28",
+  "public_origin": "https://habitu-sebaz.vercel.app",
+  "notice": "FICHA DE PRUEBA basada en la dirección pública de un negocio real de Cuba, Pereira. El establecimiento no está afiliado ni ha validado esta ficha en HABITÜ. Los profesionales, precios y horarios configurados son de demostración. Las imágenes son ilustrativas y no corresponden al local ni a su personal. Una reserva aquí NO constituye una cita real con el establecimiento ni genera cobros.",
+  "cancellation_terms": "PRUEBA de HABITÜ: esta solicitud no reserva atención en el establecimiento real ni genera cobros. Profesionales, tarifas y disponibilidad de demostración. Puedes cancelar la solicitud de prueba desde Mis reservas.",
+  "schedule": {
+    "monday": { "open": "09:00", "close": "19:00", "closed": false },
+    "tuesday": { "open": "09:00", "close": "19:00", "closed": false },
+    "wednesday": { "open": "09:00", "close": "19:00", "closed": false },
+    "thursday": { "open": "09:00", "close": "19:00", "closed": false },
+    "friday": { "open": "09:00", "close": "19:00", "closed": false },
+    "saturday": { "open": "09:00", "close": "19:00", "closed": false },
+    "sunday": { "open": "10:00", "close": "14:00", "closed": false }
+  },
+  "services": [
+    { "name": "Corte clásico · Prueba", "price": 25000, "duration": 30 },
+    { "name": "Degradado · Prueba", "price": 30000, "duration": 45 },
+    { "name": "Arreglo de barba · Prueba", "price": 15000, "duration": 30 },
+    { "name": "Corte y barba · Prueba", "price": 40000, "duration": 60 }
+  ],
+  "professionals": [
+    { "name": "Barbero de prueba 1", "specialty": "Cortes clásicos y barba · Prueba" },
+    { "name": "Barbero de prueba 2", "specialty": "Degradados y corte con tijera · Prueba" }
+  ],
+  "photos": {
+    "chair-redd": {
+      "path": "/catalog/cuba/chair-redd.jpg",
+      "author": "Redd Francisco",
+      "source": "https://unsplash.com/photos/a-barber-shop-with-a-chair-and-a-mirror-BBGyxhtPpC0",
+      "license": "https://unsplash.com/license",
+      "caption": "Foto ilustrativa de una barbería; no corresponde al establecimiento. Redd Francisco / Unsplash."
+    },
+    "chair-caio": {
+      "path": "/catalog/cuba/chair-caio.jpg",
+      "author": "Caio Coelho",
+      "source": "https://unsplash.com/photos/black-leather-barber-chair-in-white-room-OOKPHqAICKA",
+      "license": "https://unsplash.com/license",
+      "caption": "Foto ilustrativa de una barbería; no corresponde al establecimiento. Caio Coelho / Unsplash."
+    },
+    "tools-federico": {
+      "path": "/catalog/cuba/tools-federico.jpg",
+      "author": "Federico Tonini",
+      "source": "https://unsplash.com/photos/a-close-up-of-a-table-with-a-hair-brush-and-a-pair-of-scissors-5WttPbwX73c",
+      "license": "https://unsplash.com/license",
+      "caption": "Herramientas ilustrativas; no representan a un trabajador real. Federico Tonini / Unsplash."
+    }
+  },
+  "businesses": [
+    {
+      "slug": "cuba-prueba-bambinos",
+      "name": "Barbería Bambinos Cuba Pereira · Prueba",
+      "address": "Calle 66B #26-11, Cuba, Pereira, Risaralda, Colombia",
+      "photo": "chair-redd",
+      "sources": [
+        { "label": "Ubicación pública en Waze", "url": "https://www.waze.com/live-map/directions/co/risaralda/pereira/barberia-bambinos-cuba-pereira?to=place.ChIJR2iJrcp9OI4ROKU7lNj92qM" },
+        { "label": "Listado de barberías de Pereira", "url": "https://www.cybo.com/CO/pereira-colombia/barbers/" }
+      ]
+    },
+    {
+      "slug": "cuba-prueba-imperio",
+      "name": "Imperio Barberías · Prueba",
+      "address": "Calle 80, Manzana 1 Casa 1, Cuba, Pereira, Risaralda, Colombia",
+      "photo": "chair-caio",
+      "sources": [
+        { "label": "Ficha pública de Imperio Barberías", "url": "https://www.findglocal.com/CO/Pereira/102034704534212/Imperio-Barber%C3%ADas" }
+      ]
+    },
+    {
+      "slug": "cuba-prueba-barber-house-studio",
+      "name": "Barber House Studio · Prueba",
+      "address": "Carrera 37 #83A-26, barrio Girasoles, Cuba, Pereira, Risaralda, Colombia",
+      "photo": "tools-federico",
+      "sources": [
+        { "label": "Dirección pública del negocio", "url": "https://www.planetacolombia.com/barber-house-studio-F120CC20F1DD84C" },
+        { "label": "Directorio de barberías de Pereira", "url": "https://cercade.co/servicios/barberias/pereira/" }
+      ]
+    }
+  ]
+}

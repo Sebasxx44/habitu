@@ -158,7 +158,7 @@ export const SubscriptionsPage = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-[var(--habitu-primary)]/10 to-habitu-border/30 border border-[var(--habitu-primary)]/20 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="relative overflow-hidden rounded-[2.5rem] bg-card border border-[var(--habitu-primary)]/20 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-6">
             <div className="w-16 h-16 rounded-[1.5rem] bg-[var(--habitu-primary)] flex items-center justify-center text-white shrink-0">
               <Sparkles className="w-8 h-8" />

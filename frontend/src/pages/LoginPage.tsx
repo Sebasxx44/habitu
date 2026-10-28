@@ -37,7 +37,7 @@ export const LoginPage = () => {
 
       <div className="mx-auto grid w-full max-w-[1280px] flex-1 items-center gap-14 px-5 pb-12 pt-7 sm:px-10 lg:grid-cols-2 lg:gap-24 lg:px-14 lg:py-14">
         {/* BRAND */}
-        <section className="relative hidden min-h-[570px] flex-col justify-between rounded-[36px] border border-primary/10 bg-gradient-to-br from-primary/[0.07] via-card to-primary/[0.04] p-10 lg:flex xl:p-12">
+        <section className="relative hidden min-h-[570px] flex-col justify-between rounded-[36px] border border-primary/10 bg-secondary p-10 lg:flex xl:p-12">
           <div aria-hidden="true" className="absolute inset-0 overflow-hidden rounded-[36px]">
             <div className="absolute -right-40 top-24 size-[440px] rounded-full border border-primary/10" />
             <div className="absolute -right-24 top-40 size-[312px] rounded-full border border-primary/10" />

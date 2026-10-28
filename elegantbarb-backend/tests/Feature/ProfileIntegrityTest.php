@@ -33,7 +33,7 @@ final class ProfileIntegrityTest extends TestCase
         $professional = Professional::create(['user_id' => $user->id, 'business_id' => Business::factory()->create()->id, 'name' => $user->name, 'email' => $user->email]);
         $other = User::factory()->create(['name' => 'Otra persona']);
         Sanctum::actingAs($user);
-        $this->getJson('/api/profile')->assertOk()->assertJsonPath('user.id', $user->id)->assertJsonPath('preferences.theme', 'system')->assertJsonMissingPath('user.password');
+        $this->getJson('/api/profile')->assertOk()->assertJsonPath('user.id', $user->id)->assertJsonPath('preferences.theme', 'light')->assertJsonMissingPath('user.password');
         $this->putJson('/api/profile', ['name' => 'Nuevo nombre', 'phone' => '+57 300 111 2222', 'user_id' => $other->id])->assertOk()->assertJsonPath('user.name', 'Nuevo nombre');
         $this->assertSame('Nuevo nombre', $client->fresh()->name);
         $this->assertSame('+57 300 111 2222', $professional->fresh()->phone);
@@ -51,7 +51,7 @@ final class ProfileIntegrityTest extends TestCase
         Sanctum::actingAs($user);
         $preferences = ['language' => 'en', 'theme' => 'dark', 'appointment_reminders' => false, 'email_notifications' => false];
         $this->putJson('/api/profile/preferences', $preferences)->assertOk()->assertJsonPath('preferences', $preferences);
-        $this->getJson('/api/profile')->assertOk()->assertJsonPath('preferences.email_notifications', false);
+        $this->getJson('/api/profile')->assertOk()->assertJsonPath('preferences.email_notifications', false)->assertJsonPath('preferences.theme', 'dark');
         $this->putJson('/api/profile/preferences', [...$preferences, 'theme' => 'invalid'])->assertUnprocessable();
         $appointment = $this->appointment($user);
         $service = app(AppointmentNotificationService::class);

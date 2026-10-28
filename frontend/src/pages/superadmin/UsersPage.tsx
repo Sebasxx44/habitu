@@ -304,7 +304,7 @@ export const UsersPage = () => {
           ) : detailData && detailUser && (
             <div className="flex flex-col">
               {/* Header */}
-              <div className="p-6 pb-8 bg-gradient-to-br from-primary/10 via-background to-background border-b border-border relative">
+              <div className="p-6 pb-8 bg-card border-b border-border relative">
                 <Button variant="ghost" size="icon" className="absolute top-4 right-4 bg-background/50 backdrop-blur-sm rounded-full" onClick={() => setDetailUser(null)}>
                   <Plus className="w-5 h-5 rotate-45" />
                 </Button>

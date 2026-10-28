@@ -26,12 +26,13 @@
     <title>habitu · Tu próximo plan, reservado.</title>
     <script>
       (() => {
-        let preference = 'system';
+        let preference = 'light';
         try {
           const saved = localStorage.getItem('elegantbarb-theme');
-          if (saved === 'light' || saved === 'dark' || saved === 'system') preference = saved;
+          if (saved === 'light' || saved === 'dark') preference = saved;
+          else if (saved === 'system' && localStorage.getItem('elegantbarb-theme-choice') === 'system') preference = 'system';
         } catch {
-          // The system preference remains available when browser storage is disabled.
+          // Light remains the default when browser storage is disabled.
         }
         const isDark = preference === 'dark' || (preference === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
         document.documentElement.classList.add(isDark ? 'dark' : 'light');

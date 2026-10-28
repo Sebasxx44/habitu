@@ -228,11 +228,11 @@ export const AdminBarberiaPage = () => {
           {form.banner_url ? (
             <img src={form.banner_url} alt="Banner" className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+            <div className="w-full h-full flex items-center justify-center bg-slate-800">
               <Layout className="w-16 h-16 text-slate-300 dark:text-slate-700" />
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+          {form.banner_url && <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />}
           
           <div className="absolute top-6 right-6 flex items-center gap-3">
               <Button 

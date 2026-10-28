@@ -1,21 +1,22 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { defaultTheme, applyThemeToDOM } from '@/design-system/theme.config'
 import type { ThemeMode } from '@/design-system/tokens'
+import { hasExplicitTheme, resolveAccountTheme, resolveThemePreference } from '@/design-system/themePreference'
 
 // TYPES
 interface ThemeProviderProps { children: ReactNode; defaultTheme?: ThemeMode; storageKey?: string }
-interface ThemeProviderState { theme: ThemeMode; resolvedTheme: 'light' | 'dark'; setTheme: (theme: ThemeMode) => void }
+interface ThemeProviderState { theme: ThemeMode; resolvedTheme: 'light' | 'dark'; setTheme: (theme: ThemeMode) => void; applyAccountTheme: (theme: ThemeMode) => void }
 
 // CONTEXT
 const ThemeProviderContext = createContext<ThemeProviderState | null>(null)
-const isTheme = (value: string | null): value is ThemeMode => value === 'light' || value === 'dark' || value === 'system'
 const readTheme = (storageKey: string, fallback: ThemeMode): ThemeMode => {
-  try { const saved = localStorage.getItem(storageKey); return isTheme(saved) ? saved : fallback } catch { return fallback }
+  try { return resolveThemePreference(localStorage.getItem(storageKey), localStorage.getItem(`${storageKey}-choice`), fallback) } catch { return fallback }
 }
 
 // COMPONENT
-export const ThemeProvider = ({ children, defaultTheme: initialTheme = 'system', storageKey = 'elegantbarb-theme' }: ThemeProviderProps) => {
+export const ThemeProvider = ({ children, defaultTheme: initialTheme = 'light', storageKey = 'elegantbarb-theme' }: ThemeProviderProps) => {
   const [theme, setThemeState] = useState<ThemeMode>(() => readTheme(storageKey, initialTheme))
+  const chosenTheme = useRef<ThemeMode | null>(null)
   const [systemDark, setSystemDark] = useState(() => window.matchMedia('(prefers-color-scheme: dark)').matches)
   const resolvedTheme = theme === 'system' ? systemDark ? 'dark' : 'light' : theme
 
@@ -34,18 +35,35 @@ export const ThemeProvider = ({ children, defaultTheme: initialTheme = 'system',
 
   useEffect(() => {
     const syncTheme = (event: StorageEvent) => {
-      if (event.key === storageKey) setThemeState(isTheme(event.newValue) ? event.newValue : initialTheme)
+      if (event.key === storageKey || event.key === `${storageKey}-choice` || event.key === null) {
+        chosenTheme.current = null
+        setThemeState(readTheme(storageKey, initialTheme))
+      }
     }
     window.addEventListener('storage', syncTheme)
     return () => window.removeEventListener('storage', syncTheme)
   }, [storageKey, initialTheme])
 
   const setTheme = useCallback((next: ThemeMode) => {
-    try { localStorage.setItem(storageKey, next) } catch { /* Preserve the preference for this session. */ }
+    chosenTheme.current = next
+    try { localStorage.setItem(`${storageKey}-choice`, next); localStorage.setItem(storageKey, next) } catch { /* Preserve the preference for this session. */ }
     setThemeState(next)
   }, [storageKey])
 
-  return <ThemeProviderContext.Provider value={{ theme, resolvedTheme, setTheme }}>{children}</ThemeProviderContext.Provider>
+  const applyAccountTheme = useCallback((next: ThemeMode) => {
+    if (chosenTheme.current) { setThemeState(chosenTheme.current); return }
+    try {
+      const saved = localStorage.getItem(storageKey)
+      const choice = localStorage.getItem(`${storageKey}-choice`)
+      if (!hasExplicitTheme(saved, choice) && next === 'dark') {
+        localStorage.setItem(`${storageKey}-choice`, next)
+        localStorage.setItem(storageKey, next)
+      }
+      setThemeState(resolveAccountTheme(next, saved, choice))
+    } catch { setThemeState(next === 'system' ? 'light' : next) }
+  }, [storageKey])
+
+  return <ThemeProviderContext.Provider value={{ theme, resolvedTheme, setTheme, applyAccountTheme }}>{children}</ThemeProviderContext.Provider>
 }
 
 export const useTheme = (): ThemeProviderState => {

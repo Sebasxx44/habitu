@@ -8,7 +8,7 @@ final class AccountPreferences
 {
     public static function forUser(User $user): array
     {
-        return array_replace(['language' => 'es', 'theme' => 'system', 'appointment_reminders' => true, 'email_notifications' => true], $user->preferences ?? []);
+        return array_replace(['language' => 'es', 'theme' => 'light', 'appointment_reminders' => true, 'email_notifications' => true], $user->preferences ?? []);
     }
 
     public static function allows(?User $user, string $key): bool

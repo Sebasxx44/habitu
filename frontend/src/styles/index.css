@@ -164,7 +164,7 @@
   }
   .habitu-card-dark {
     border-radius: 1.25rem;
-    background: linear-gradient(125deg, #3B4DFF, #293BE0);
+    background: var(--brand-blue);
     color: white;
     box-shadow: var(--habitu-shadow-dark);
   }
@@ -329,10 +329,10 @@
 
 /* Dashboard foundation */
 .dashboard-hero {
-  background: linear-gradient(112deg, #3B4DFF 0%, #293BE0 100%);
+  background: var(--brand-blue);
 }
 .dark .dashboard-hero {
-  background: linear-gradient(112deg, #3B4DFF 0%, #293BE0 100%);
+  background: var(--brand-blue);
 }
 .dashboard-enter { animation: dashboard-reveal 260ms ease-out both; }
 @keyframes dashboard-reveal {
@@ -350,9 +350,9 @@
 }
 
 /* Discovery: editorial hierarchy and provider-independent map controls. */
-.discovery-intro { background: linear-gradient(115deg, hsl(var(--secondary)), hsl(var(--card)) 75%); }
+.discovery-intro { background: hsl(var(--card)); }
 .discovery-results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 20px; }
-.discovery-card-art { position: relative; isolation: isolate; overflow: hidden; color: hsl(var(--primary)); background: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--accent) / .2)); }
+.discovery-card-art { position: relative; isolation: isolate; overflow: hidden; color: hsl(var(--primary)); background: hsl(var(--secondary)); }
 .discovery-card-art::before, .discovery-card-art::after { content: ''; position: absolute; z-index: -1; width: 260px; height: 260px; border: 1px solid hsl(var(--primary) / .14); border-radius: 50%; right: -100px; top: -80px; }
 .discovery-card-art::after { width: 360px; height: 360px; right: -120px; top: -40px; }
 .discovery-map .leaflet-container { font-family: inherit; background: hsl(var(--muted)); z-index: 0; }
@@ -369,15 +369,13 @@
   .surface-card {
     border: 1px solid hsl(var(--border));
     border-radius: 1.25rem;
-    background-color: hsl(var(--card));
+    background: hsl(var(--card));
     box-shadow: var(--shadow-card);
   }
   .surface-primary {
     border-color: rgb(255 255 255 / 0.14);
     background-color: var(--brand-blue);
-    background-image:
-      radial-gradient(ellipse at 100% 0%, rgb(213 250 71 / 0.11), transparent 45%),
-      linear-gradient(120deg, #3B4DFF 0%, #3544EE 100%);
+    background-image: none;
     color: #fff;
     box-shadow: 0 12px 32px rgb(59 77 255 / 0.2);
   }
@@ -390,7 +388,7 @@
   .surface-accent {
     border-color: rgb(151 181 32 / 0.3);
     background-color: var(--brand-lime);
-    background-image: linear-gradient(120deg, #D5FA47, #E2FF7B);
+    background-image: none;
     color: #171A2B;
     box-shadow: 0 8px 24px rgb(151 181 32 / 0.1);
   }
@@ -405,8 +403,8 @@
     transition: border-color 200ms ease, box-shadow 200ms ease;
   }
   .ta-panel-header {
-    background: linear-gradient(100deg, hsl(var(--primary) / 0.055), transparent 85%);
-    border-bottom: 1px solid hsl(var(--primary) / 0.065);
+    background: transparent;
+    border-bottom: 1px solid hsl(var(--border));
   }
   .ta-panel-icon {
     color: hsl(var(--primary));
@@ -416,7 +414,7 @@
     border-color: hsl(var(--primary) / 0.23);
   }
   .ta-panel[data-tone="primary"] .ta-panel-header {
-    background: linear-gradient(100deg, hsl(var(--primary) / 0.13), hsl(var(--primary) / 0.04));
+    background: transparent;
     border-bottom-color: hsl(var(--primary) / 0.12);
   }
   .ta-panel[data-tone="primary"] .ta-panel-icon {
@@ -427,7 +425,7 @@
     border-color: hsl(var(--accent) / 0.45);
   }
   .ta-panel[data-tone="accent"] .ta-panel-header {
-    background: linear-gradient(100deg, hsl(var(--accent) / 0.2), hsl(var(--accent) / 0.04));
+    background: transparent;
     border-bottom-color: hsl(var(--accent) / 0.18);
   }
   .ta-panel[data-tone="accent"] .ta-panel-icon {
@@ -435,24 +433,18 @@
     background: var(--brand-lime);
   }
   .ta-action-header {
-    background:
-      radial-gradient(ellipse at 100% 0%, hsl(var(--accent) / 0.19), transparent 45%),
-      linear-gradient(110deg, hsl(var(--primary) / 0.075), hsl(var(--card)) 85%);
+    background: hsl(var(--card));
     box-shadow: 0 3px 16px hsl(var(--primary) / 0.025);
   }
   .ta-empty-state {
-    background: radial-gradient(ellipse at 50% 0%, hsl(var(--primary) / 0.035), transparent 65%);
+    background: hsl(var(--card));
     animation: app-fade-in 280ms ease-out both;
   }
   .stat-card {
-    border: 1px solid hsl(var(--primary) / 0.14);
+    border: 1px solid hsl(var(--border));
     border-radius: 1.25rem;
-    background: linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--card)) 75%);
+    background: hsl(var(--card));
     box-shadow: var(--shadow-card);
-  }
-  .stat-card:nth-child(3n + 2) {
-    border-color: hsl(var(--accent) / 0.35);
-    background: linear-gradient(135deg, hsl(var(--accent) / 0.18), hsl(var(--card)) 75%);
   }
   .ta-button {
     -webkit-tap-highlight-color: transparent;

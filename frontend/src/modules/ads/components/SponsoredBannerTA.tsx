@@ -29,9 +29,11 @@ export const SponsoredBannerTA = ({ placement }: { placement: string }) => {
             alt=""
           />
         ) : (
-          <div className="h-full bg-gradient-to-br from-primary/30 to-lime-300/20" />
+          <div className="h-full bg-primary" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+        {current.image_url && (
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+        )}
         <span className="absolute left-3 top-3 rounded-full bg-background/95 px-2.5 py-1 text-[11px] font-semibold text-foreground">
           {t("sponsored")}
         </span>
