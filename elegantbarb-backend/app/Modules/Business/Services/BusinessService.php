@@ -118,6 +118,9 @@ class BusinessService implements ServiceInterface
     private function createBusiness(array $data): ServiceResponse
     {
         $data['slug'] = $data['slug'] ?? \Illuminate\Support\Str::slug($data['name']) . '-' . time();
+        $data['rating'] = 0;
+        $data['reviews_count'] = 0;
+        $data['verified'] = false;
 
         $business = $this->repository->create($data);
 
