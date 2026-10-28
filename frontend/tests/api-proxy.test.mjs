@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const { default: proxy } = await import(`${process.cwd()}/api/[...path].ts`);
+const { default: proxy } = await import(`${process.cwd()}/api/proxy.ts`);
 const originalFetch = globalThis.fetch;
 const originalOrigin = process.env.HABITU_API_ORIGIN;
 
@@ -162,4 +162,40 @@ test("el handler no puede usarse como proxy fuera de /api", async () => {
     new Request("https://app.test/cliente/wallet"),
   );
   assert.equal(response.status, 404);
+});
+
+test("el rewrite estático conserva la ruta API y elimina sólo el parámetro interno", async () => {
+  process.env.HABITU_API_ORIGIN = "https://backend.test";
+  const destinations = [];
+  globalThis.fetch = async (url) => {
+    destinations.push(url.href);
+    return Response.json({ success: true });
+  };
+  for (const url of [
+    "https://app.test/api/proxy?__habitu_api_path=auth%2Fconfig&filter=one&filter=two",
+    "https://app.test/api/auth/config?__habitu_api_path=auth/config&filter=one&filter=two",
+  ]) {
+    const response = await proxy.fetch(new Request(url));
+    assert.equal(response.status, 200);
+  }
+  assert.deepEqual(destinations, [
+    "https://backend.test/api/auth/config?filter=one&filter=two",
+    "https://backend.test/api/auth/config?filter=one&filter=two",
+  ]);
+});
+
+test("el parámetro interno nunca permite salir de /api o cambiar el origen", async () => {
+  process.env.HABITU_API_ORIGIN = "https://backend.test";
+  let calls = 0;
+  globalThis.fetch = async (url) => {
+    calls++;
+    assert.equal(url.origin, "https://backend.test");
+    assert.match(url.pathname, /^\/api\//);
+    return Response.json({ success: true });
+  };
+  const escaped = await proxy.fetch(new Request("https://app.test/api/proxy?__habitu_api_path=..%2Fauth"));
+  assert.equal(escaped.status, 400);
+  const fixed = await proxy.fetch(new Request("https://app.test/api/proxy?__habitu_api_path=https%3A%2F%2Fevil.test%2Fsecret"));
+  assert.equal(fixed.status, 200);
+  assert.equal(calls, 1);
 });

@@ -6,11 +6,15 @@
   "installCommand": "npm ci",
   "fluid": true,
   "functions": {
-    "api/[...path].ts": {
+    "api/proxy.ts": {
       "maxDuration": 30
     }
   },
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/proxy?__habitu_api_path=:path*"
+    },
     {
       "source": "/:path((?!api(?:/|$)).*)",
       "destination": "/index.html"

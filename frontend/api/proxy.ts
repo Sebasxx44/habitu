@@ -22,6 +22,7 @@ const RESPONSE_HEADERS = [
   "x-ratelimit-reset",
 ];
 const METHODS = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
+const ROUTE_QUERY = "__habitu_api_path";
 
 // SERVICES
 const responseHeaders = (): Headers =>
@@ -64,6 +65,17 @@ const proxy = async (request: Request): Promise<Response> => {
   if (!METHODS.includes(request.method))
     return failure(405, "API_METHOD_NOT_ALLOWED", "Método no permitido.");
 
+  // Vercel explicitly routes standalone API paths to this static function.
+  const routedPath = incoming.searchParams.get(ROUTE_QUERY);
+  const pathname =
+    routedPath === null ? incoming.pathname : `/api/${routedPath}`;
+  incoming.searchParams.delete(ROUTE_QUERY);
+  const target = new URL(incoming.origin);
+  target.pathname = pathname;
+  target.search = incoming.search;
+  if (!/^\/api(?:\/|$)/.test(target.pathname))
+    return failure(400, "API_ROUTE_NOT_FOUND", "La ruta de API no es válida.");
+
   const origin = backendOrigin();
   if (!origin)
     return failure(
@@ -73,9 +85,8 @@ const proxy = async (request: Request): Promise<Response> => {
     );
 
   // The destination is fixed by server configuration; no URL supplied by a client is used.
-  const target = new URL(origin.origin);
-  target.pathname = incoming.pathname;
-  target.search = incoming.search;
+  target.protocol = origin.protocol;
+  target.host = origin.host;
   const headers = new Headers();
   for (const name of REQUEST_HEADERS) {
     const value = request.headers.get(name);
