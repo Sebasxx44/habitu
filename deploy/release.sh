@@ -13,5 +13,6 @@ if [ "${APP_ENV:-production}" != production ] || [ "${APP_DEBUG:-false}" != fals
 fi
 php artisan config:clear --no-interaction
 php artisan migrate --force --no-interaction
+php artisan db:seed --class=ProductionCatalogSeeder --force --no-interaction
 php artisan app:bootstrap-superadmin --if-configured --no-interaction
 
