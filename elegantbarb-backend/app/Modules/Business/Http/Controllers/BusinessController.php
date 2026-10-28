@@ -13,26 +13,26 @@ class BusinessController extends Controller
 {
     public function __construct(
         private BusinessService $service,
-        private UploadService $uploadService
+        private UploadService $uploadService,
+        private \App\Modules\Business\Services\PublicCatalogService $publicCatalog
     ) {}
 
     public function index(Request $request): JsonResponse
     {
-        $filters = $request->only(['category_id', 'active', 'search']);
-        $response = $this->service->all($filters);
+        $filters = $request->validate(['category_id' => 'nullable|integer|min:1', 'active' => 'nullable|string|in:0,1,true,false', 'search' => 'nullable|string|max:150']);
+        $response = $this->publicCatalog->all($filters, $request->user('sanctum') ?? $request->user());
         return $response->toJsonResponse();
     }
 
-    public function show(int $id): JsonResponse
+    public function show(Request $request, int $id): JsonResponse
     {
-        $response = $this->service->find($id);
+        $response = $this->publicCatalog->find($id, $request->user('sanctum') ?? $request->user(), false);
         return $response->toJsonResponse();
     }
 
     public function bySlug(string $slug): JsonResponse
     {
-        $business = \App\Modules\Business\Models\Business::where('slug', $slug)->where('is_active', true)->firstOrFail();
-        return $this->service->find($business->id)->toJsonResponse();
+        return $this->publicCatalog->bySlug($slug)->toJsonResponse();
     }
 
     public function store(Request $request): JsonResponse

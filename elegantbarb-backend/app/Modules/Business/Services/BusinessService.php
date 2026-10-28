@@ -6,6 +6,11 @@ use App\Core\Contracts\ServiceInterface;
 use App\Core\DTOs\ServiceResponse;
 use App\Modules\Business\Models\Business;
 use App\Modules\Business\Repositories\BusinessRepository;
+use App\Modules\Booking\Services\BookingRules;
+use App\Modules\People\DTOs\ProfessionalProfile;
+use App\Modules\People\Models\Professional;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class BusinessService implements ServiceInterface
 {
@@ -69,15 +74,40 @@ class BusinessService implements ServiceInterface
                 ['open_time' => $schedule->open_time?->format('H:i'), 'close_time' => $schedule->close_time?->format('H:i')]
             )));
         }
+        // Any explicit link, including a disabled one, disables the legacy all-professionals fallback.
+        $configuredServiceIds = DB::table('catalog.professional_services')->whereIn('service_id', $business->services->modelKeys())
+            ->pluck('service_id')->map(fn ($serviceId): int => (int) $serviceId)->unique()->all();
+        $legacyProfiles = null;
         foreach ($business->services as $service) {
-            $service->setRelation('professionals', $service->professionals->groupBy('id')->map(fn ($profiles) => array_merge(
-                $profiles->first()->only(\App\Modules\People\DTOs\ProfessionalProfile::PUBLIC_FIELDS),
-                ['branch_ids' => $profiles->map(fn ($profile) => $profile->pivot->branch_id)->unique()->values()->all()]
-            ))->values());
+            $model = BookingRules::model($service, $business);
+            $profiles = $service->professionals->groupBy('id')->map(fn ($linked) => array_merge(
+                $linked->first()->only(ProfessionalProfile::PUBLIC_FIELDS),
+                ['branch_ids' => $linked->map(fn ($profile): int => (int) $profile->pivot->branch_id)->unique()->values()->all()]
+            ))->values();
+            $allowsProfessional = in_array($model, ['professional', 'optional_professional'], true)
+                || ($model === 'resource' && $service->resource_professional_optional);
+            if ($allowsProfessional && ! in_array($service->id, $configuredServiceIds, true)) {
+                $legacyProfiles ??= $this->legacyProfessionals($business);
+                $profiles = $legacyProfiles;
+            }
+            $service->setRelation('professionals', $profiles);
             $service->setAttribute('currency', 'COP');
-            $service->setAttribute('booking_model', \App\Modules\Booking\Services\BookingRules::model($service, $business));
+            $service->setAttribute('booking_model', $model);
         }
         return ServiceResponse::success($business, 'Negocio encontrado');
+    }
+
+    private function legacyProfessionals(Business $business): Collection
+    {
+        $business->loadMissing('professionals.availability');
+        $branchIds = $business->branches->filter(fn ($branch): bool => $branch->is_active && $branch->deleted_at === null)
+            ->map(fn ($branch): int => (int) $branch->id)->all();
+        return $business->professionals->map(fn (Professional $professional): array => [
+            ...$professional->only(ProfessionalProfile::PUBLIC_FIELDS),
+            'branch_ids' => $professional->availability->isEmpty() ? $branchIds : $professional->availability
+                ->where('is_available', true)->pluck('branch_id')->map(fn ($branchId): int => (int) $branchId)
+                ->intersect($branchIds)->unique()->values()->all(),
+        ])->filter(fn (array $profile): bool => $profile['branch_ids'] !== [])->values();
     }
 
     public function create(array $data): ServiceResponse

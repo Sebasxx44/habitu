@@ -41,6 +41,13 @@ Route::prefix('v2')->group(function () {
 
     require __DIR__.'/marketplace.php';
 
+    Route::prefix('public')->group(function () {
+        Route::get('businesses', [\App\Modules\Business\Http\Controllers\PublicCatalogController::class, 'index']);
+        Route::get('businesses/slug/{slug}', [\App\Modules\Business\Http\Controllers\PublicCatalogController::class, 'bySlug']);
+        Route::get('businesses/{id}', [\App\Modules\Business\Http\Controllers\PublicCatalogController::class, 'show'])->whereNumber('id');
+        Route::get('availability', [\App\Modules\Business\Http\Controllers\PublicCatalogController::class, 'availability']);
+    });
+
     Route::middleware(['auth:sanctum', 'throttle:api'])->prefix('favorites')->group(function () {
         Route::get('/', [\App\Modules\People\Http\Controllers\FavoriteController::class, 'index']);
         Route::get('ids', [\App\Modules\People\Http\Controllers\FavoriteController::class, 'identifiers']);
