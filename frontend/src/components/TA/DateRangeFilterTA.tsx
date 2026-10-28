@@ -60,7 +60,7 @@ export const DateRangeFilterTA = (props: DateRangeFilterProps) => {
       <div className="flex flex-wrap items-end gap-3">
         <label
           htmlFor={`${id}-start`}
-          className="min-w-0 flex-1 space-y-1.5 text-xs font-semibold sm:max-w-[200px]"
+          className="min-w-[min(100%,150px)] flex-1 space-y-1.5 text-xs font-semibold sm:max-w-[200px]"
         >
           <span>{t("start")}</span>
           <InputTA
@@ -76,7 +76,7 @@ export const DateRangeFilterTA = (props: DateRangeFilterProps) => {
         </label>
         <label
           htmlFor={`${id}-end`}
-          className="min-w-0 flex-1 space-y-1.5 text-xs font-semibold sm:max-w-[200px]"
+          className="min-w-[min(100%,150px)] flex-1 space-y-1.5 text-xs font-semibold sm:max-w-[200px]"
         >
           <span>{t("end")}</span>
           <InputTA
