@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { ButtonTA } from "@/components/TA/ButtonTA"
 import { XIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
@@ -46,7 +46,8 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-[9999] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-[1.25rem] bg-card border border-habitu-border shadow-[0_24px_60px_rgba(0,0,0,0.15)] p-6 text-sm duration-150 outline-none max-h-[90vh] overflow-y-auto sm:max-w-md data-[open]:animate-in data-[open]:fade-in-0 data-[open]:zoom-in-95 data-[closed]:animate-out data-[closed]:fade-out-0 data-[closed]:zoom-out-95",
+          "fixed top-1/2 left-1/2 z-[9999] w-full max-w-[calc(100%-1rem)] -translate-x-1/2 -translate-y-1/2 rounded-[1.25rem] bg-card border border-habitu-border shadow-[0_24px_60px_rgba(0,0,0,0.15)] p-6 text-sm duration-150 outline-none max-h-[calc(100dvh-2rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain scroll-py-6 sm:max-w-md data-[open]:animate-in data-[open]:fade-in-0 data-[open]:zoom-in-95 data-[closed]:animate-out data-[closed]:fade-out-0 data-[closed]:zoom-out-95",
+          showCloseButton && "[&_[data-slot=dialog-header]]:pr-10",
           className
         )}
         {...props}
@@ -56,10 +57,10 @@ function DialogContent({
           <DialogPrimitive.Close
             data-slot="dialog-close"
             render={
-              <Button variant="ghost" size="icon" className="absolute top-4 right-4" aria-label={t('common.close')} />
+              <ButtonTA variant="ghost" size="icon" className="absolute top-2 right-2" aria-label={t('common.close')} />
             }
           >
-            <XIcon />
+            <XIcon aria-hidden="true" />
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Popup>
@@ -71,7 +72,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-1.5 text-center sm:text-left", className)}
+      className={cn("flex flex-col gap-1.5 text-left", className)}
       {...props}
     />
   )
@@ -86,7 +87,7 @@ function DialogFooter({ className, showCloseButton = false, children, ...props }
       {...props}
     >
       {children}
-      {showCloseButton && <DialogPrimitive.Close render={<Button variant="outline" />}>{t('common.close')}</DialogPrimitive.Close>}
+      {showCloseButton && <DialogPrimitive.Close render={<ButtonTA variant="outline" />}>{t('common.close')}</DialogPrimitive.Close>}
     </div>
   )
 }

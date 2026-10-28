@@ -14,6 +14,7 @@ import {
   type ConciergeIntent,
 } from "@/modules/assistant/config";
 import { cn } from "@/lib/utils";
+import { ButtonTA } from "@/components/TA/ButtonTA";
 
 // COMPONENT
 export const ConciergeQuickActionsTA = ({
@@ -41,19 +42,20 @@ export const ConciergeQuickActionsTA = ({
       {conciergeIntents.map((intent) => {
         const Icon = icons[intent];
         return (
-          <button
+          <ButtonTA
+            variant="outline"
             type="button"
             key={intent}
             disabled={disabled}
             onClick={() => onChoose(intent)}
             className={cn(
-              "flex min-h-12 min-w-0 items-center gap-2 rounded-xl border border-border bg-card p-3 text-left text-xs font-medium transition-colors hover:border-primary/40 hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50",
+              "flex min-h-12 min-w-0 justify-start items-center gap-2 whitespace-normal rounded-xl border border-border bg-card p-3 text-left text-sm font-medium transition-colors hover:border-primary/40 hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50",
               !compact && "sm:flex-col sm:items-start sm:gap-3 sm:p-4",
             )}
           >
             <Icon className="size-4 shrink-0 text-primary" aria-hidden="true" />
             {t(`concierge.${intent}`)}
-          </button>
+          </ButtonTA>
         );
       })}
     </div>

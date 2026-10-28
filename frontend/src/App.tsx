@@ -47,6 +47,7 @@ const CampaignDetailPage = lazy(() => import('@/modules/campaigns/CampaignDetail
 const ProfessionalDashboardPage = lazy(() => import('@/pages/barbero/BarberoDashboardPage').then(module => ({ default: module.BarberoDashboardPage })))
 const ProfessionalAppointmentsPage = lazy(() => import('@/pages/barbero/BarberoAppointmentsPage').then(module => ({ default: module.BarberoAppointmentsPage })))
 const ClienteDashboardPage = lazy(() => import('@/pages/cliente/ClienteDashboardPage').then(module => ({ default: module.ClienteDashboardPage })))
+const ClienteAnalyticsPage = lazy(() => import('@/pages/cliente/ClienteAnalyticsPage').then(module => ({ default: module.ClienteAnalyticsPage })))
 const ClienteBookingPage = lazy(() => import('@/pages/cliente/ClienteBookingPage').then(module => ({ default: module.ClienteBookingPage })))
 const ClienteLoyaltyPage = lazy(() => import('@/pages/cliente/ClienteLoyaltyPage').then(module => ({ default: module.ClienteLoyaltyPage })))
 const ClienteAppointmentsPage = lazy(() => import('@/pages/cliente/ClienteAppointmentsPage').then(module => ({ default: module.ClienteAppointmentsPage })))
@@ -204,6 +205,7 @@ const App = () => {
             <Route path="/barbero/dashboard" element={<Navigate to="/professional/dashboard" />} />
             <Route path="/barbero/appointments" element={<Navigate to="/professional/appointments" />} />
             <Route path="/cliente/dashboard" element={<ClientHome />} />
+            <Route path="/cliente/analytics" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><ClienteAnalyticsPage /></PageWrapper></ProtectedRoute>} />
             <Route path="/cliente/explore" element={<PageWrapper><ExploreBusinessesPage /></PageWrapper>} />
             <Route path="/cliente/explorar" element={<Navigate to="/cliente/explore" />} />
             <Route path="/cliente/booking" element={<PageWrapper><ClienteBookingPage /></PageWrapper>} />

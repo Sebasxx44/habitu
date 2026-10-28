@@ -4,7 +4,7 @@ import type { FilterDraftState } from "@/modules/discovery/filters/types";
 
 // CONFIGURATION
 const selectClass =
-  "min-h-11 w-full rounded-xl border border-input bg-background px-3 text-sm";
+  "min-h-11 w-full rounded-xl border border-input bg-background px-3 text-base";
 
 // COMPONENT
 export const DiscoveryAdvancedFiltersTA = ({
@@ -54,7 +54,7 @@ export const DiscoveryAdvancedFiltersTA = ({
             min={5}
             max={1440}
             step={5}
-            className="bg-background"
+            className="min-w-0 bg-background text-base"
             value={values.duration_minutes}
             onChange={(event) =>
               change({

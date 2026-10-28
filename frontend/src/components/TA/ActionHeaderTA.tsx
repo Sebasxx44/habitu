@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Sparkles, type LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // TYPES
 interface ActionHeaderProps {
@@ -8,6 +9,7 @@ interface ActionHeaderProps {
   description?: string;
   actions?: ReactNode;
   icon?: LucideIcon;
+  variant?: "card" | "plain";
 }
 
 // COMPONENT
@@ -17,10 +19,11 @@ export const ActionHeaderTA = ({
   description,
   actions,
   icon: Icon = Sparkles,
+  variant = "card",
 }: ActionHeaderProps) => (
-  <header className="ta-action-header flex flex-col justify-between gap-5 rounded-3xl border border-primary/10 p-5 sm:flex-row sm:items-end sm:p-6">
+  <header className={cn("flex flex-col justify-between gap-5 sm:flex-row sm:items-end", variant === "card" && "ta-action-header rounded-3xl border border-primary/10 p-5 sm:p-6")}>
     <div className="min-w-0">
-      <div className="mb-3 flex items-center gap-2.5">
+      {(eyebrow || variant === "card") && <div className="mb-3 flex items-center gap-2.5">
         <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-habitu-blue text-white shadow-sm shadow-habitu-blue/20">
           <Icon className="size-4" aria-hidden="true" />
         </span>
@@ -29,7 +32,7 @@ export const ActionHeaderTA = ({
             {eyebrow}
           </p>
         )}
-      </div>
+      </div>}
       <h1 className="text-2xl font-extrabold tracking-[-0.045em] text-foreground sm:text-3xl md:text-[36px] md:leading-tight">
         {title}
       </h1>

@@ -114,8 +114,8 @@
   html {
     color-scheme: light;
     -webkit-text-size-adjust: 100%;
-    scroll-padding-top: calc(92px + env(safe-area-inset-top));
-    scroll-padding-bottom: calc(7rem + env(safe-area-inset-bottom));
+    scroll-padding-top: calc(var(--app-header-height, 76px) + 16px + env(safe-area-inset-top));
+    scroll-padding-bottom: calc(var(--bottom-nav-height, 7rem) + 24px);
   }
   html.dark {
     color-scheme: dark;
@@ -126,15 +126,23 @@
   }
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-ring;
+    outline-style: solid;
   }
 }
 
 /* Keep mobile form controls readable without browser zoom on focus. */
-@media (max-width: 639px) {
+@media (max-width: 767px) {
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
   textarea,
   select {
     font-size: 16px;
+  }
+  .ta-button {
+    min-height: 48px;
+    min-width: 44px;
+  }
+  .app-canvas {
+    background-image: none;
   }
 }
 
@@ -542,5 +550,25 @@
   .habitu-btn-primary:active,
   .habitu-btn-secondary:active {
     transform: none;
+  }
+}
+
+/* Keep touch controls and overlays usable on small screens. */
+@media (max-width: 767px) {
+  [data-slot="input"],
+  [data-slot="select-trigger"] {
+    min-height: 48px;
+    font-size: 16px;
+  }
+  [data-slot="select-item"],
+  [data-slot="dropdown-menu-item"],
+  [data-slot="dropdown-menu-sub-trigger"],
+  [data-slot="dropdown-menu-checkbox-item"],
+  [data-slot="dropdown-menu-radio-item"] {
+    min-height: 44px;
+  }
+  .app-page,
+  .page-content > * {
+    animation: none;
   }
 }

@@ -1,7 +1,7 @@
-import { BookingIntentsTA } from "@/modules/discovery/components/BookingIntentsTA";
 import {
   ArrowUpRight,
   CalendarDays,
+  ChevronDown,
   MapPin,
   Navigation,
   Search,
@@ -54,9 +54,8 @@ export const DiscoveryHeroTA = ({
           <span className="mt-3 block h-1.5 w-20 rounded-full bg-accent" />
         </div>
       </div>
-      <BookingIntentsTA />
       <form
-        className="relative z-20 mt-7 grid gap-1 rounded-2xl border border-border bg-background p-2 shadow-sm sm:grid-cols-2 lg:grid-cols-[minmax(180px,1.4fr)_minmax(130px,1fr)_minmax(150px,1fr)_auto] lg:items-center"
+        className="relative z-20 mt-5 grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-1 rounded-2xl border border-border bg-background p-2 shadow-sm"
         onSubmit={(event) => {
           event.preventDefault();
           search.setSuggest(false);
@@ -66,7 +65,17 @@ export const DiscoveryHeroTA = ({
         <div className="min-w-0">
           <DiscoverySearchTA search={search} />
         </div>
-        <label className="flex min-w-0 items-center gap-3 border-t border-border px-3 py-1 sm:border-l sm:border-t-0">
+        <ButtonTA type="submit" className="my-1 min-h-12 px-3 sm:px-7">
+          <Search className="size-4" aria-hidden="true" />
+          {ui("searchAction")}
+        </ButtonTA>
+        <details className="group col-span-2 min-w-0 border-t border-border">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 rounded-lg px-3 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden">
+            <span className="min-w-0"><span className="font-medium">{ui("locationAndDate")}</span><span className="ml-2 text-muted-foreground [overflow-wrap:anywhere]">{[filters.values.zone, filters.values.date].filter(Boolean).join(' · ') || ui("optionalSearch")}</span></span>
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+          </summary>
+          <div className="grid min-w-0 gap-2 border-t border-border pt-2 sm:grid-cols-2">
+        <label className="flex min-w-0 items-center gap-3 rounded-xl px-3 py-2">
           <MapPin className="size-5 shrink-0 text-primary" aria-hidden="true" />
           <span className="min-w-0 flex-1">
             <span className="block text-[11px] font-bold">{ui("where")}</span>
@@ -77,11 +86,11 @@ export const DiscoveryHeroTA = ({
                 filters.change({ zone: event.target.value, lat: "", lng: "" })
               }
               placeholder={ui("wherePlaceholder")}
-              className="h-7 min-h-7 border-0 bg-transparent p-0 text-xs shadow-none"
+              className="h-11 min-h-11 min-w-0 border-0 bg-transparent p-0 text-base shadow-none"
             />
           </span>
         </label>
-        <label className="flex min-w-0 items-center gap-3 border-t border-border px-3 py-1 lg:border-l lg:border-t-0">
+        <label className="flex min-w-0 items-center gap-3 rounded-xl px-3 py-2">
           <CalendarDays
             className="size-5 shrink-0 text-primary"
             aria-hidden="true"
@@ -100,20 +109,18 @@ export const DiscoveryHeroTA = ({
                   available: event.target.value ? "1" : "",
                 })
               }
-              className="h-7 min-h-7 w-full border-0 bg-transparent p-0 text-xs shadow-none"
+              className="h-11 min-h-11 w-full min-w-0 border-0 bg-transparent p-0 text-base shadow-none"
             />
           </span>
         </label>
-        <ButtonTA type="submit" className="m-1 min-h-11 px-7">
-          <Search className="size-4" />
-          {ui("searchAction")}
-        </ButtonTA>
+          </div>
+        </details>
       </form>
       <div className="relative z-10 mt-3 flex flex-wrap items-center gap-1">
         <ButtonTA
           variant="ghost"
           size="sm"
-          className="text-xs text-muted-foreground"
+          className="min-h-11 text-xs text-muted-foreground"
           onClick={location.point ? location.clear : location.locate}
           disabled={location.loading}
         >
@@ -129,7 +136,7 @@ export const DiscoveryHeroTA = ({
         <ButtonTA
           variant="ghost"
           size="sm"
-          className="text-xs text-muted-foreground"
+          className="min-h-11 text-xs text-muted-foreground"
           onClick={onFilters}
         >
           <SlidersHorizontal className="size-3.5" />
@@ -142,7 +149,7 @@ export const DiscoveryHeroTA = ({
         </ButtonTA>
         <Link
           to="/cliente/ai-chat"
-          className="ml-auto inline-flex min-h-10 items-center gap-1.5 px-2 text-xs font-medium text-primary hover:underline"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-xs font-medium text-primary hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary sm:ml-auto"
         >
           <Sparkles className="size-3.5" />
           {ui("helpChoose")}

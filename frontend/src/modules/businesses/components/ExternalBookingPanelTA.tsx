@@ -34,7 +34,7 @@ export const ExternalBookingPanelTA = ({
             href={source}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-10 items-center gap-1.5 text-xs font-medium text-primary underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+            className="inline-flex min-h-11 items-center gap-1.5 text-xs font-medium text-primary underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
           >
             {t("listingSource")}
             <ArrowUpRight className="size-3.5" aria-hidden="true" />

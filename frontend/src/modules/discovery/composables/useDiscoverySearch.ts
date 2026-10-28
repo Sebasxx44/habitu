@@ -1,4 +1,5 @@
 import { useRealtimeRevision } from '@/modules/realtime/useRealtimeRefresh';
+import { useDiscoveryOrigin } from '@/modules/discovery/composables/useDiscoveryOrigin';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -33,6 +34,7 @@ export const useDiscoverySearch = (): DiscoverySearchState => {
   // STATE
   const { t: ui } = useTranslation("discoveryUi");
   const navigate = useNavigate();
+  const { navigation } = useDiscoveryOrigin();
   const [params, setParams] = useSearchParams();
   const query = params.toString();
   const values = useMemo(
@@ -70,7 +72,7 @@ export const useDiscoverySearch = (): DiscoverySearchState => {
     setSuggest(false);
     setDraft("");
     if (item.type === "business" && item.id) {
-      navigate(`/cliente/business/${item.id}`);
+      navigate(`/cliente/business/${item.id}`, { state: navigation.state });
       return;
     }
     const patch: DiscoveryFilterChange = {
@@ -153,7 +155,7 @@ export const useDiscoverySearch = (): DiscoverySearchState => {
         .then((rows) => {
           if (!controller.signal.aborted) setSuggestions(rows);
         })
-        .catch(() => setSuggestions([]));
+        .catch(() => { if (!controller.signal.aborted) setSuggestions([]); });
     }, 200);
     return () => {
       controller.abort();

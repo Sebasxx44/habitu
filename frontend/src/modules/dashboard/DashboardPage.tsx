@@ -3,7 +3,7 @@ import { t } from 'i18next'
 import { currentLocale } from '@/i18n/formatters'
 import { ArrowUpRight, Download, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/App";
+import { useAuth } from "@/contexts/AuthContext";
 import { ActionHeaderTA } from "@/components/TA/ActionHeaderTA";
 import { DateRangeFilterTA } from "@/components/TA/DateRangeFilterTA";
 import { ButtonTA } from "@/components/TA/ButtonTA";
@@ -26,8 +26,13 @@ import type {
 import { PanelTA } from "@/components/TA/PanelTA";
 import { formatDay, formatMoney } from "@/modules/dashboard/formatters";
 import { visibleNavigation } from "@/components/TA/navigation";
-import { HomePromotionsTA } from "@/modules/discovery/components/HomePromotionsTA";
-import { HomeDiscoveryTA } from "@/modules/discovery/components/HomeDiscoveryTA";
+import { ClientHomeTA } from "@/modules/dashboard/components/ClientHomeTA";
+
+// TYPES
+interface DashboardPageProps {
+  role: DashboardRole;
+  variant?: "home" | "analytics";
+}
 
 // CONSTANTS
 const roleConfig = (): Record<
@@ -115,14 +120,8 @@ const exportOverview = (data: DashboardOverview): void => {
   URL.revokeObjectURL(url);
 };
 
-// COMPONENT
-export const DashboardPage = ({
-  role,
-  variant = "home",
-}: {
-  role: DashboardRole;
-  variant?: "home" | "analytics";
-}) => {
+// OVERVIEW COMPONENT
+const DashboardOverviewPage = ({ role, variant = "home" }: DashboardPageProps) => {
   useTranslation()
   const { user, permissions } = useAuth();
   const { overview, filters } = useDashboardOverview();
@@ -149,7 +148,7 @@ export const DashboardPage = ({
 
   return (
     <div className="dashboard-enter space-y-7">
-      {isClient && !isAnalytics ? <HomeDiscoveryTA /> : <ActionHeaderTA
+      <ActionHeaderTA
         eyebrow={isAnalytics ? t('dashboard.analyticsEyebrow') : date}
         title={heading}
         description={
@@ -182,7 +181,7 @@ export const DashboardPage = ({
             )}
           </>
         }
-      />}
+      />
       <section className="surface-card p-4 sm:p-5"><DateRangeFilterTA value={filters.range} onChange={filters.setRange} /></section>
       {overview.error ? (
         <div className="rounded-2xl border border-border bg-card">
@@ -205,7 +204,6 @@ export const DashboardPage = ({
               canOpenAgenda={canOpenAgenda}
             />
           )}
-          {isClient && !isAnalytics && <HomePromotionsTA />}
           <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
             <div>
               <h2 className="text-sm font-semibold">
@@ -218,7 +216,6 @@ export const DashboardPage = ({
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              {isClient && !isAnalytics && <ButtonTA variant="outline" size="icon" onClick={overview.refresh} disabled={overview.loading} aria-label={t('dashboard.refresh')}><RefreshCw className={overview.loading ? "animate-spin" : ""} /></ButtonTA>}
               {filters.currencies.length > 1 && (
                 <label className="sr-only" htmlFor="dashboard-currency">
                   {t('dashboard.currency')}
@@ -365,3 +362,11 @@ export const DashboardPage = ({
     </div>
   );
 };
+
+// COMPONENT
+export const DashboardPage = ({ role, variant = "home" }: DashboardPageProps) =>
+  role === "CLIENTE" && variant === "home" ? (
+    <ClientHomeTA />
+  ) : (
+    <DashboardOverviewPage role={role} variant={variant} />
+  );

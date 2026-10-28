@@ -227,6 +227,7 @@ export const navigationByRole: Record<User["role"], NavigationItem[]> = {
       icon: LayoutDashboard,
       group: "workspace",
     },
+    { label: "Analítica", path: "/cliente/analytics", icon: TrendingUp, group: "growth" },
     { label: "En grupo", path: "/cliente/groups", icon: Users, group: "workspace" },
     { label: "Mis rutinas", path: "/cliente/routines", icon: CalendarDays, group: "workspace" },
     { label: "Experiencias y regalos", path: "/cliente/experiencias", icon: Gift, group: "growth" },
@@ -322,7 +323,7 @@ export const visibleNavigation = (
   ).map(item => ({ ...item, label: (item.path === '/cliente/messages' || item.path.endsWith('/ai-chat')) ? conciergeName : i18n.t(`navigation.${item.path === '/cliente/appointments' ? 'myBookings' : item.path === '/cliente/on-demand' ? 'forNow' : item.label === 'Beneficios' ? 'benefits' : navigationKeys[item.label] ?? item.label}`) }));
 
 export const primaryClientNavigation = (permissions: string[]): NavigationItem[] => {
-  const paths = ['/cliente/explore', '/cliente/on-demand', '/cliente/appointments', '/cliente/favorites']
+  const paths = ['/cliente/dashboard', '/cliente/explore', '/cliente/appointments', '/cliente/analytics']
   const items = visibleNavigation('CLIENTE', permissions)
   return paths.flatMap(path => items.filter(item => item.path === path))
 }

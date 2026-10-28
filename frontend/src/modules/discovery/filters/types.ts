@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import type {
   DiscoveryFilterChange,
   DiscoveryFilters,
@@ -31,6 +32,7 @@ export interface FilterDraftState {
 
 export interface CategoryPickerState {
   selection: {
+    listRef: RefObject<HTMLDivElement>;
     visible: BusinessCategory[];
     expanded: boolean;
     canExpand: boolean;

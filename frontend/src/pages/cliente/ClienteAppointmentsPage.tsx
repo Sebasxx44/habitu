@@ -30,21 +30,21 @@ export const ClienteAppointmentsPage = () => {
   return (
     <div className="space-y-7 pb-10">
       <ActionHeaderTA icon={CalendarDays} eyebrow="Tu agenda" title="Mis citas" description="Tus próximos planes y el historial de tus visitas." actions={<ButtonTA onClick={() => navigate('/cliente/explore')}><Plus className="size-4" /> Nueva cita</ButtonTA>} />
-      <section className="surface-card p-4 sm:p-5"><DateRangeFilterTA value={period.range} onChange={period.setRange} /></section>
       <div className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_300px]">
-        <div className="min-w-0 space-y-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex max-w-full gap-1 overflow-x-auto rounded-xl bg-secondary p-1" role="tablist" aria-label="Estado de las citas">
-              {tabs.map(tab => <button key={tab.value} role="tab" aria-selected={filters.view === tab.value} onClick={() => filters.setView(tab.value)} className={cn('min-h-11 shrink-0 rounded-lg px-3 text-sm font-medium focus-visible:outline focus-visible:outline-primary', filters.view === tab.value ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground')}>{tab.label}</button>)}
+        <div className="min-w-0 space-y-5" aria-busy={list.loading}>
+          <div className="flex flex-wrap items-center gap-2 sm:justify-between">
+            <div className="grid min-w-0 flex-1 grid-cols-3 gap-1 rounded-xl bg-secondary p-1 sm:flex-none" role="group" aria-label="Estado de las citas">
+              {tabs.map(tab => <ButtonTA key={tab.value} variant={filters.view === tab.value ? 'default' : 'ghost'} aria-pressed={filters.view === tab.value} onClick={() => filters.setView(tab.value)} className="h-auto min-w-0 whitespace-normal rounded-lg px-2 py-2 text-xs leading-snug sm:px-3 sm:text-sm">{tab.label}</ButtonTA>)}
             </div>
-            <ButtonTA variant="ghost" onClick={list.refresh} aria-label="Actualizar citas"><RefreshCw className={cn('size-4', list.loading && 'animate-spin')} /></ButtonTA>
+            <ButtonTA variant="ghost" size="icon" onClick={list.refresh} disabled={list.loading} aria-label="Actualizar citas"><RefreshCw className={cn('size-4', list.loading && 'animate-spin')} /></ButtonTA>
           </div>
+          {filters.view !== 'upcoming' && <section className="surface-card p-4 sm:p-5"><DateRangeFilterTA value={period.range} onChange={period.setRange} /></section>}
           {filters.view !== 'upcoming' && <p className="text-sm text-muted-foreground">Historial del {formatDate(period.range.start)} al {formatDate(period.range.end)}.</p>}
           {list.loading ? <SkeletonTA variant="list" count={3} label="Cargando citas" />
             : list.error ? <StateTA error title="No pudimos cargar tus citas" description={list.error} onRetry={list.refresh} />
-              : list.data.length === 0 ? <StateTA title={filters.view === 'upcoming' ? 'Tu agenda está libre' : 'Sin citas en este período'} description={filters.view === 'upcoming' ? 'Explora tus negocios favoritos y reserva tu próximo servicio.' : 'Cambia el período para consultar otras visitas.'} />
+              : list.data.length === 0 ? <div className="space-y-3"><StateTA title={filters.view === 'upcoming' ? 'Tu agenda está libre' : 'Sin citas en este período'} description={filters.view === 'upcoming' ? 'Explora tus negocios favoritos y reserva tu próximo servicio.' : 'Cambia el período para consultar otras visitas.'} />{filters.view === 'upcoming' && <ButtonTA className="w-full sm:w-auto" onClick={() => navigate('/cliente/explore')}><Plus className="size-4" aria-hidden="true" /> Explorar negocios</ButtonTA>}</div>
                 : <div className="space-y-4">{list.data.map((appointment, index) => (
-                  <article key={appointment.id} className={cn('surface-card rounded-2xl border bg-card p-5 md:p-6', filters.view === 'upcoming' && index === 0 && filters.page === 1 ? 'border-primary/30 bg-primary/5 shadow-[var(--shadow-soft)]' : 'border-border')}>
+                  <article key={appointment.id} className={cn('surface-card rounded-2xl border bg-card p-5 md:p-6', filters.view === 'upcoming' && index === 0 && filters.page === 1 ? 'border-primary/30 shadow-[var(--shadow-soft)]' : 'border-border')}>
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div><p className="text-xs text-muted-foreground">{appointment.booking_code || `Cita ${appointment.id}`}</p><h2 className="mt-1 text-lg font-semibold tracking-tight">{appointment.service?.name || 'Servicio'}</h2><p className="mt-1 text-sm text-muted-foreground">{appointment.barber?.name || 'Equipo del negocio'}</p></div>
                       <div className="text-right"><Badge variant="secondary">{appointment.status.replace(/_/g, ' ')}</Badge><p className="mt-2 text-sm font-semibold">{new Intl.NumberFormat('es-CO', { style: 'currency', currency: appointment.currency || 'COP' }).format(appointment.price)}</p></div>

@@ -1,4 +1,4 @@
-import { DashboardPage } from '@/modules/dashboard/DashboardPage'
+import { ClientHomeTA } from '@/modules/dashboard/components/ClientHomeTA'
 
 // COMPONENT
-export const ClienteDashboardPage = () => <DashboardPage role="CLIENTE" />
+export const ClienteDashboardPage = () => <ClientHomeTA />
