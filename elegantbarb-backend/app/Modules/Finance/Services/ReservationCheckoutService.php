@@ -30,6 +30,7 @@ final class ReservationCheckoutService
 
     public function create(User $user, array $data): array
     {
+        app(\App\Modules\Business\Services\BusinessService::class)->assertBookable((int) $data['business_id']);
         return DB::transaction(function () use ($user, $data) {
             User::whereKey($user->id)->lockForUpdate()->firstOrFail();
             $fingerprintData = $data;

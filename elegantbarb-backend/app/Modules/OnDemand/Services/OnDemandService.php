@@ -116,6 +116,7 @@ class OnDemandService implements ServiceInterface
 
     public function request(array $data): ServiceResponse
     {
+        if (! empty($data['business_id'])) app(\App\Modules\Business\Services\BusinessService::class)->assertBookable((int) $data['business_id']);
         try {
             return DB::transaction(function () use ($data) {
                 $data['request_code'] = 'OD-' . strtoupper(\Str::random(8));

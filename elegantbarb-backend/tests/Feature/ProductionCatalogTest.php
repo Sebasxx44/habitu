@@ -19,7 +19,7 @@ final class ProductionCatalogTest extends TestCase
             'services.wompi.integrity_secret' => null, 'services.wompi.events_secret' => null]);
         $this->seed(ProductionCatalogSeeder::class);
 
-        $this->assertDatabaseCount('platform.business_categories', 10);
+        $this->assertDatabaseCount('platform.business_categories', 11);
         $this->assertDatabaseHas('platform.business_categories', ['slug' => 'barberia', 'is_active' => true]);
         $this->assertDatabaseCount('finance.payment_methods', 5);
         $this->assertDatabaseHas('finance.payment_methods', ['code' => 'cash', 'is_active' => true]);
@@ -42,7 +42,7 @@ final class ProductionCatalogTest extends TestCase
         ]);
 
         $this->seed(ProductionCatalogSeeder::class);
-        $this->assertDatabaseCount('platform.business_categories', 10);
+        $this->assertDatabaseCount('platform.business_categories', 11);
         $this->assertDatabaseCount('finance.payment_methods', 5);
         $this->assertDatabaseHas('platform.business_categories', [
             'slug' => 'barberia', 'name' => 'Nombre personalizado', 'is_active' => false,
@@ -73,7 +73,7 @@ final class ProductionCatalogTest extends TestCase
         ]);
         $this->seed(ProductionCatalogSeeder::class);
 
-        $this->assertDatabaseCount('platform.business_categories', 10);
+        $this->assertDatabaseCount('platform.business_categories', 11);
         $this->assertDatabaseCount('finance.payment_methods', 1);
         $this->assertDatabaseHas('finance.payment_methods', ['code' => 'custom', 'name' => 'Método propio', 'is_active' => false]);
     }

@@ -119,6 +119,7 @@ final class AvailabilityService
 
     public function resolve(array $data, bool $lock = false, ?int $ignoreId = null): array
     {
+        app(\App\Modules\Business\Services\BusinessService::class)->assertBookable((int) $data['business_id'], $this->snapshot?->businesses->get($data['business_id']));
         foreach ($this->candidates($data) as $candidate) {
             $prepared = $this->prepare($candidate, $lock);
             $start = CarbonImmutable::parse($data['date'].' '.$data['start_time'], config('booking.timezone'));
@@ -134,6 +135,7 @@ final class AvailabilityService
 
     public function slots(array $data, bool $firstOnly = false): array
     {
+        app(\App\Modules\Business\Services\BusinessService::class)->assertBookable((int) $data['business_id'], $this->snapshot?->businesses->get($data['business_id']));
         $day = CarbonImmutable::parse($data['date'], config('booking.timezone'))->startOfDay();
         $clock = CarbonImmutable::now(config('booking.timezone'));
         if ($day->lt($clock->startOfDay())) return ['date' => $day->toDateString(), 'timezone' => config('booking.timezone'), 'slots' => [], 'professionals' => []];

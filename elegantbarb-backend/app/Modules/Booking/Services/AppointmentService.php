@@ -187,6 +187,7 @@ class AppointmentService implements ServiceInterface
     }
     private function createReservation(array $data): Appointment
     {
+        app(\App\Modules\Business\Services\BusinessService::class)->assertBookable((int) $data['business_id']);
         if (! empty($data['client_user_id'])) {
             $user = \App\Models\User::whereKey($data['client_user_id'])->lockForUpdate()->firstOrFail();
             $profile = \App\Modules\People\Models\Client::firstOrCreate(['user_id' => $user->id, 'business_id' => $data['business_id']], [

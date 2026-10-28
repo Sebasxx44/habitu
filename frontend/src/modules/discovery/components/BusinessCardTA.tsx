@@ -16,12 +16,16 @@ import {
   Flower2,
   Activity,
   Smile,
+  PawPrint,
+  PenTool,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ButtonTA } from "@/components/TA/ButtonTA";
 import { cn } from "@/lib/utils";
 import { discoveryBookingLink } from "@/modules/discovery/query";
 import type { DiscoveryBusiness } from "@/modules/discovery/searchTypes";
+import { isExternalBooking } from "@/modules/businesses/booking";
+import { ExternalBookingButtonTA } from "@/modules/businesses/components/ExternalBookingButtonTA";
 
 // TYPES
 interface BusinessCardProps {
@@ -37,6 +41,8 @@ interface BusinessCardProps {
 // HELPERS
 const categoryIcon = (name: string) => {
   const text = name.toLocaleLowerCase("es");
+  if (/veterin|mascot/.test(text)) return PawPrint;
+  if (/tattoo|tatuaj/.test(text)) return PenTool;
   if (/barb|peluq/.test(text)) return Scissors;
   if (/gym|gimn|deport|entren/.test(text)) return Dumbbell;
   if (/spa|bienestar|masaj/.test(text)) return Flower2;
@@ -63,7 +69,8 @@ export const BusinessCardTA = ({
   const image = business.banner_url || business.logo_url;
   const category = business.category?.name || ui("experiences");
   const Icon = categoryIcon(category);
-  const slot = business.next_available;
+  const external = isExternalBooking(business);
+  const slot = external ? null : business.next_available;
   const slotDay = slot ? formatDate(slot.date, { year: undefined, weekday: 'short' }) : '';
   const address =
     business.main_branch?.address ||
@@ -123,7 +130,7 @@ export const BusinessCardTA = ({
             className={cn("size-5", favorite && "fill-white text-white")}
           />
         </button>
-        {business.active_promotion && (
+        {!external && business.active_promotion && (
           <span className="absolute bottom-3 left-3 max-w-[85%] truncate rounded-full bg-accent px-3 py-1.5 text-[11px] font-semibold text-accent-foreground shadow-sm">
             {business.active_promotion.type === "PERCENTAGE"
               ? ui("percentDiscount", { value: formatNumber(Number(business.active_promotion.discount)) })
@@ -162,7 +169,7 @@ export const BusinessCardTA = ({
               ` · ${formatNumber(Number(business.distance_km), { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km`}
           </span>
         </p>
-        <div className="flex min-h-6 flex-wrap gap-x-2 gap-y-1 text-xs text-muted-foreground">
+        {!external && <div className="flex min-h-6 flex-wrap gap-x-2 gap-y-1 text-xs text-muted-foreground">
           {(business.service_previews ?? [])
             .slice(0, 2)
             .map((service, index) => (
@@ -179,8 +186,10 @@ export const BusinessCardTA = ({
                 {service.name}
               </Link>
             ))}
-        </div>
-        {slot ? (
+        </div>}
+        {external ? (
+          <p className="text-[11px] leading-relaxed text-muted-foreground">{ui("externalBookingAvailability")}</p>
+        ) : slot ? (
           <p className="flex items-center gap-1.5 rounded-xl bg-accent/35 px-3 py-2 text-[11px] font-medium text-foreground">
             <Clock3 className="size-3.5" />
             {t('express.availableAt', { date: slotDay, time: formatTime(slot.start_time) })}
@@ -190,7 +199,7 @@ export const BusinessCardTA = ({
             {ui("otherDates")}
           </p>
         )}
-        <div className="flex items-center justify-between gap-2 border-t border-border pt-3">
+        {external ? <div className="space-y-2 border-t border-border pt-3"><ExternalBookingButtonTA business={business} className="w-full text-xs" /><p className="text-[10px] text-muted-foreground">{ui("externalBookingChannel")}</p></div> : <div className="flex items-center justify-between gap-2 border-t border-border pt-3">
           <div>
             {business.price_from != null ? (
               <>
@@ -214,9 +223,9 @@ export const BusinessCardTA = ({
           >
             {t('discovery.reserve')} <ArrowUpRight className="size-3.5" />
           </ButtonTA>
-        </div>
-        {!!business.service_previews?.length && <ButtonTA className="w-full text-xs" variant="ghost" aria-expanded={expanded} onClick={() => setExpanded(value => !value)}>{t(expanded ? 'discovery.hideTimes' : 'discovery.showTimes')}</ButtonTA>}
-        {expanded && <AvailabilityPreviewTA business={business} source={source} />}
+        </div>}
+        {!external && !!business.service_previews?.length && <ButtonTA className="w-full text-xs" variant="ghost" aria-expanded={expanded} onClick={() => setExpanded(value => !value)}>{t(expanded ? 'discovery.hideTimes' : 'discovery.showTimes')}</ButtonTA>}
+        {!external && expanded && <AvailabilityPreviewTA business={business} source={source} />}
       </div>
     </motion.article>
   );

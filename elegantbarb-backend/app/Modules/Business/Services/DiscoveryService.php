@@ -66,6 +66,14 @@ final class DiscoveryService
         $this->slots->prime($ids, $from->toDateString(), $to->toDateString());
     }
 
+    private function requiresInventory(array $filters): bool
+    {
+        return ! empty($filters['available']) || ! empty($filters['promotions']) || ($filters['participants'] ?? 1) > 1
+            || array_intersect(array_keys($filters), ['date', 'date_to', 'time_from', 'time_to', 'min_price', 'max_price',
+                'service_id', 'professional_id', 'booking_model', 'duration_minutes', 'resource_id', 'resource_type',
+                'sport_type', 'surface', 'covered']) !== [];
+    }
+
     private function query(array $filters): Builder
     {
         $query = Business::where('business.businesses.is_active', true)->select('business.businesses.*')
@@ -79,14 +87,21 @@ final class DiscoveryService
             $like = $this->like($term);
             $query->where(fn ($q) => $q->whereRaw($this->normalized('business.businesses.name').' LIKE ?', [$like])
                 ->orWhereRaw($this->normalized('business.businesses.description').' LIKE ?', [$like])
-                ->orWhereHas('category', fn ($q) => $q->whereRaw($this->normalized('name').' LIKE ?', [$like]))
+                ->orWhereHas('category', fn ($q) => $q->where(fn ($category) => $category
+                    ->whereRaw($this->normalized('name').' LIKE ?', [$like])
+                    ->orWhereRaw($this->normalized('slug').' LIKE ?', [$like])
+                    ->orWhereRaw($this->normalized('description').' LIKE ?', [$like])))
                 ->orWhereHas('services', fn ($q) => $q->where('is_active', true)->whereRaw($this->normalized('name').' LIKE ?', [$like]))
                 ->orWhereHas('professionals', fn ($q) => $q->where('is_active', true)->where(fn ($p) => $p->whereRaw($this->normalized('name').' LIKE ?', [$like])->orWhereRaw($this->normalized('specialty').' LIKE ?', [$like])))
                 ->orWhereHas('branches', fn ($q) => $q->where('is_active', true)->whereNull('deleted_at')->whereHas('business', fn ($q) => $q->where('is_active', true))->whereRaw($this->normalized('address').' LIKE ?', [$like])));
         }
         if (! empty($filters['category_id'])) $query->where('business_category_id', $filters['category_id']);
         if (! empty($filters['zone'])) $query->whereHas('branches', fn ($q) => $q->where('is_active', true)->whereNull('deleted_at')->whereHas('business', fn ($q) => $q->where('is_active', true))->whereRaw($this->normalized('address').' LIKE ?', [$this->like($filters['zone'])]));
-        $query->whereHas('services', fn ($q) => $this->serviceFilters($q->where('is_active', true), $filters));
+        $query->where(fn ($scope) => $scope
+            ->where(fn ($internal) => $internal->where('booking_mode', 'internal')
+                ->whereHas('services', fn ($services) => $this->serviceFilters($services->where('is_active', true), $filters)))
+            ->when(! $this->requiresInventory($filters), fn ($external) => $external->orWhere(fn ($listing) => $listing
+                ->where('booking_mode', 'external')->whereNotNull('booking_url')->whereNotNull('listing_source_url'))));
         if (isset($filters['min_rating'])) $query->whereRaw('(SELECT AVG(r.rating) FROM reviews.reviews r WHERE r.business_id = business.businesses.id AND r.is_active = TRUE) >= ?', [$filters['min_rating']]);
         if (! empty($filters['promotions'])) $query->whereHas('promotions', fn ($promotions) => $promotions->activeAndValid()
             ->where(fn ($eligible) => $eligible->whereDoesntHave('services')->orWhereHas('services', fn ($services) => $this->serviceFilters($services->where('catalog.services.is_active', true), $filters))));
@@ -137,7 +152,7 @@ final class DiscoveryService
 
     private function present(Business $business, array $filters, bool $withAvailability = true): array
     {
-        $data = $business->only(['id', 'name', 'slug', 'description', 'phone', 'email', 'logo_url', 'banner_url', 'business_category_id', 'is_active', 'verified', 'created_at']);
+        $data = $business->only(['id', 'name', 'slug', 'description', 'phone', 'email', 'logo_url', 'banner_url', 'business_category_id', 'is_active', 'verified', 'created_at', 'booking_mode', 'booking_url', 'listing_source_url']);
         $data['category'] = $business->category?->only(['id', 'name', 'slug', 'icon', 'color']);
         $branches = $business->branches->map(fn ($branch) => $branch->only(['id', 'business_id', 'name', 'address', 'lat', 'lng', 'phone', 'is_main_branch', 'is_active']));
         $data['branches'] = $branches->all();
@@ -147,6 +162,10 @@ final class DiscoveryService
         $data['distance_km'] = $business->distance_km === null ? null : round((float) $business->distance_km, 2);
         $data['distance'] = $data['distance_km'];
         $data['price_from'] = $business->discovery_price === null ? null : (float) $business->discovery_price;
+        if ($business->booking_mode === 'external') {
+            return [...$data, 'verified' => false, 'price_from' => null, 'services' => [], 'service_previews' => [],
+                'active_promotion' => null, 'next_available' => null];
+        }
         $services = $business->services->map(fn ($service) => ['id' => $service->id, 'name' => $service->name,
             'price' => (float) $service->effective_price, 'duration_minutes' => $service->duration_minutes, 'business_id' => $service->business_id,
             'booking_model' => \App\Modules\Booking\Services\BookingRules::model($service, $business), 'duration_mode' => $service->duration_mode,
@@ -165,6 +184,7 @@ final class DiscoveryService
 
     private function nextAvailability(Business $business, array $filters): ?array
     {
+        if ($business->booking_mode === 'external') return null;
         $day = CarbonImmutable::parse($filters['date'] ?? 'today', config('booking.timezone'))->startOfDay();
         $lastDay = isset($filters['date_to']) ? CarbonImmutable::parse($filters['date_to'], config('booking.timezone'))->startOfDay()
             : (isset($filters['date']) ? $day : $day->addDays(6));

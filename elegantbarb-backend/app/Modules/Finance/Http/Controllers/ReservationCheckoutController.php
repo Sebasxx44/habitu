@@ -24,12 +24,14 @@ final class ReservationCheckoutController extends Controller
     public function policy(Request $request): JsonResponse
     {
         $data = $request->validate(['business_id' => 'required|integer|min:1']);
+        app(\App\Modules\Business\Services\BusinessService::class)->assertBookable((int) $data['business_id']);
         Business::where('is_active', true)->findOrFail($data['business_id']);
         return ServiceResponse::success($this->checkout->policy((int) $data['business_id']))->toJsonResponse();
     }
 
     public function updatePolicy(Request $request, int $businessId): JsonResponse
     {
+        app(\App\Modules\Business\Services\BusinessService::class)->assertBookable($businessId);
         $business = Business::findOrFail($businessId);
         abort_unless($request->user()->role === 'SUPERADMIN' || ($request->user()->role === 'ADMIN_BARBERIA' && (int) $business->owner_user_id === $request->user()->id), 403);
         $data = $request->validate(['allowed_modes' => 'required|array|min:1|max:3', 'allowed_modes.*' => 'required|distinct|in:FULL,DEPOSIT,ON_SITE',

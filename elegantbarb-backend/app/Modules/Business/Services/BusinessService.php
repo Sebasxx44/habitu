@@ -11,6 +11,7 @@ use App\Modules\People\DTOs\ProfessionalProfile;
 use App\Modules\People\Models\Professional;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class BusinessService implements ServiceInterface
 {
@@ -110,6 +111,50 @@ class BusinessService implements ServiceInterface
         ])->filter(fn (array $profile): bool => $profile['branch_ids'] !== [])->values();
     }
 
+    public function assertBookable(int $businessId, ?Business $business = null): void
+    {
+        $business ??= Business::find($businessId);
+        if ($business?->booking_mode === 'external') {
+            throw ValidationException::withMessages(['business_id' => 'Este negocio recibe solicitudes en su canal oficial externo. Consulta el enlace publicado; HABITÜ no administra su agenda.']);
+        }
+    }
+
+    private function listingMetadata(array $data, ?Business $existing = null): array
+    {
+        $mode = $data['booking_mode'] ?? $existing?->booking_mode ?? 'internal';
+        if ($existing && $mode !== $existing->booking_mode) {
+            throw ValidationException::withMessages(['booking_mode' => 'Cambiar el canal requiere verificar primero la autorización del comerciante.']);
+        }
+        foreach (['booking_url', 'listing_source_url'] as $field) {
+            $value = array_key_exists($field, $data) ? $data[$field] : $existing?->getAttribute($field);
+            if ($value !== null && (! is_string($value) || ! $this->publicHttpsUrl($value))) {
+                throw ValidationException::withMessages([$field => 'Usa un enlace HTTPS oficial sin credenciales.']);
+            }
+            if ($mode === 'external' && ($data['is_active'] ?? $existing?->is_active ?? true) && ! $value) {
+                throw ValidationException::withMessages([$field => 'La ficha necesita un enlace oficial y su fuente antes de publicarse.']);
+            }
+        }
+        if ($mode === 'external') {
+            foreach (['services', 'professionals', 'resources', 'schedule', 'opening_hours'] as $field) {
+                if (! empty($data[$field])) throw ValidationException::withMessages([$field => 'Una ficha externa no crea personal, servicios ni horarios operativos en HABITÜ.']);
+            }
+            if (! $existing) $data['owner_user_id'] = null;
+            $data['uses_professionals'] = false;
+            $data['uses_resources'] = false;
+        }
+        $data['booking_mode'] = $mode;
+        return $data;
+    }
+
+    private function publicHttpsUrl(string $value): bool
+    {
+        $url = parse_url($value);
+        return filter_var($value, FILTER_VALIDATE_URL) !== false && is_array($url)
+            && strtolower($url['scheme'] ?? '') === 'https' && ! empty($url['host'])
+            && ! isset($url['user']) && ! isset($url['pass'])
+            && (! isset($url['port']) || $url['port'] === 443);
+    }
+
     public function create(array $data): ServiceResponse
     {
         return \DB::transaction(fn () => $this->createBusiness($data));
@@ -117,6 +162,7 @@ class BusinessService implements ServiceInterface
 
     private function createBusiness(array $data): ServiceResponse
     {
+        $data = $this->listingMetadata($data);
         $data['slug'] = $data['slug'] ?? \Illuminate\Support\Str::slug($data['name']) . '-' . time();
         $data['rating'] = 0;
         $data['reviews_count'] = 0;
@@ -208,6 +254,7 @@ class BusinessService implements ServiceInterface
             return ServiceResponse::notFound('Negocio');
         }
 
+        $data = $this->listingMetadata($data, $business);
         \DB::transaction(function () use ($business, $id, $data) {
             $business->newQuery()->whereKey($id)->lockForUpdate()->firstOrFail();
             $this->repository->update($id, $data);

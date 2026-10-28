@@ -10,6 +10,9 @@ export interface Business {
   phone?: string
   email?: string
   description?: string
+  booking_mode?: 'internal' | 'external'
+  booking_url?: string | null
+  listing_source_url?: string | null
   lat?: string | number | null
   lng?: string | number | null
   license?: License

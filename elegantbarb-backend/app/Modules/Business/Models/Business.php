@@ -36,6 +36,9 @@ class Business extends Model
         'is_active',
         'uses_professionals',
         'uses_resources',
+        'booking_mode',
+        'booking_url',
+        'listing_source_url',
     ];
 
     protected $casts = [

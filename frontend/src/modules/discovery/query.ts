@@ -1,4 +1,5 @@
 import type { DiscoveryFilters } from "@/modules/discovery/searchTypes";
+import { isExternalBooking } from "@/modules/businesses/booking";
 
 // FILTERS
 export const discoveryDefaults: DiscoveryFilters = {
@@ -58,6 +59,7 @@ export const discoveryDay = (offset = 0, clock = new Date(), timezone = "America
 export const discoveryBookingLink = (
   business: {
     id: number;
+    booking_mode?: 'internal' | 'external';
     next_available?: {
       service_id: number;
       branch_id: number;
@@ -72,6 +74,7 @@ export const discoveryBookingLink = (
   serviceId?: number,
   source?: "marketplace" | "assistant" | "express",
 ): string => {
+  if (isExternalBooking(business)) return `/cliente/business/${business.id}`;
   const params = new URLSearchParams({ book: "1" });
   if (source) params.set("source", source);
   if (serviceId) params.set("service_id", String(serviceId));

@@ -17,6 +17,7 @@ final class PublicBusinessProfile
         'id', 'business_category_id', 'name', 'slug', 'description', 'phone', 'email', 'website',
         'logo_url', 'banner_url', 'primary_color', 'secondary_color', 'accent_color',
         'rating', 'reviews_count', 'verified', 'is_active', 'uses_professionals', 'uses_resources',
+        'booking_mode', 'booking_url', 'listing_source_url',
     ];
     private const SERVICE_FIELDS = [
         'id', 'business_id', 'service_category_id', 'name', 'description', 'price', 'duration_minutes',
@@ -44,6 +45,10 @@ final class PublicBusinessProfile
     public function present(Business $business): array
     {
         $data = $this->summary($business);
+        if ($business->booking_mode === 'external') {
+            return [...$data, 'verified' => false, 'services' => [], 'professionals' => [], 'resources' => [], 'reviews' => [],
+                'promotions' => [], 'opening_hours' => null, 'price_from' => null, 'next_available' => null];
+        }
         $branchIds = array_column($data['branches'], 'id');
         $data['professionals'] = $business->professionals
             ->filter(fn (Professional $professional): bool => $professional->is_active && (int) $professional->business_id === $business->id)

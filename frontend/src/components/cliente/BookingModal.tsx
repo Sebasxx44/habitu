@@ -20,6 +20,7 @@ import type { BookingBranch, BookingBusiness, BookingContext, BookingProfessiona
 import type { Resource } from '@/types/models'
 import { statusLabels } from '@/modules/dashboard/formatters'
 import { cn } from '@/lib/utils'
+import { isExternalBooking } from '@/modules/businesses/booking'
 
 // TYPES
 interface BookingModalProps {
@@ -87,5 +88,5 @@ const BookingFlow = ({ onClose, shop, professionals, services, resources, initia
 export const BookingModal = ({ open, ...props }: BookingModalProps) => {
   const { user } = useAuth()
   const { identity } = useRequireAccount()
-  return open ? <BookingFlow key={identity.authenticated ? user?.id : 'guest'} {...props} /> : null
+  return open && !isExternalBooking(props.shop) ? <BookingFlow key={identity.authenticated ? user?.id : 'guest'} {...props} /> : null
 }

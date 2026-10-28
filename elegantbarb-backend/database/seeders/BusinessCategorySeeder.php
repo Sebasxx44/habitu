@@ -20,6 +20,7 @@ class BusinessCategorySeeder extends Seeder
             ['name' => 'Entrenamiento / Running', 'slug' => 'running-club', 'icon' => 'Footprints', 'color' => '#EC4899', 'sort_order' => 8],
             ['name' => 'Espacio Recreativo', 'slug' => 'espacio-recreativo', 'icon' => 'Gamepad2', 'color' => '#6366F1', 'sort_order' => 9],
             ['name' => 'Clínica / Terapia', 'slug' => 'clinica-terapia', 'icon' => 'HeartPulse', 'color' => '#14B8A6', 'sort_order' => 10],
+            ['name' => 'Veterinaria', 'slug' => 'veterinaria', 'description' => 'Clínicas y servicios veterinarios', 'icon' => 'PawPrint', 'color' => '#0D9488', 'sort_order' => 11],
         ];
 
         foreach ($categories as $cat) {

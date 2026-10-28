@@ -5,9 +5,12 @@ import {
   Flower2,
   Dumbbell,
   HeartPulse,
+  PawPrint,
+  PenTool,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { DiscoveryFilterChange } from "@/modules/discovery/searchTypes";
+import { discoveryIntentFilters } from "@/modules/discovery/filters/intents";
 
 // COMPONENT
 export const DiscoveryIntentsTA = ({
@@ -17,8 +20,10 @@ export const DiscoveryIntentsTA = ({
 }) => {
   const { t } = useTranslation("marketplace");
   const activities = [
-    { key: "football", query: "fútbol", icon: CircleDot },
-    { key: "haircut", query: "corte", icon: Scissors },
+    { key: "football", query: "cancha", icon: CircleDot },
+    { key: "haircut", query: "peluquería", icon: Scissors },
+    { key: "veterinary", query: "veterinaria", icon: PawPrint },
+    { key: "tattoo", query: "tattoo", icon: PenTool },
     { key: "manicure", query: "manicure", icon: Sparkles },
     { key: "massage", query: "masaje", icon: Flower2 },
     { key: "workout", query: "entrenamiento", icon: Dumbbell },
@@ -29,20 +34,11 @@ export const DiscoveryIntentsTA = ({
       <h2 id="discovery-intents-title" className="mb-4 text-sm font-semibold">
         {t("discovery.intent")}
       </h2>
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {activities.map(({ key, query, icon: Icon }) => (
           <button
             key={key}
-            onClick={() =>
-              onChoose({
-                q: query,
-                category_id: "",
-                service_id: "",
-                professional_id: "",
-                resource_id: "",
-                page: "1",
-              })
-            }
+            onClick={() => onChoose(discoveryIntentFilters(query))}
             className="flex min-h-24 flex-col items-center justify-center gap-3 rounded-2xl border border-border bg-card px-2 py-3 text-center text-xs font-medium transition-colors hover:border-primary/40 hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
           >
             <Icon

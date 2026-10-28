@@ -1,0 +1,246 @@
+{
+  "version": "pereira-real-2026-10-28",
+  "reviewed_at": "2026-10-28",
+  "retire_preview_slugs": [
+    "cuba-prueba-bambinos",
+    "cuba-prueba-imperio",
+    "cuba-prueba-barber-house-studio"
+  ],
+  "businesses": [
+    {
+      "slug": "asvet-pereira",
+      "name": "ASVET Pereira",
+      "category_slug": "veterinaria",
+      "description": "Clínica veterinaria con sede en Los Rosales. Su sitio publica consulta veterinaria, hospitalización, cirugía, laboratorio e imágenes diagnósticas, además de estética para mascotas. El contacto de la sede Pereira permite solicitar atención por WhatsApp.",
+      "address": "Carrera 12B #08-48, barrio Los Rosales, Pereira, Risaralda",
+      "phone": "+573007493929",
+      "email": null,
+      "website": "https://asvets.com/",
+      "booking_url": "https://wa.me/573007493929?text=Hola,%20quiero%20agendar%20una%20cita%20en%20Pereira",
+      "listing_source_url": "https://asvets.com/#sedes",
+      "photo": {
+        "url": "https://asvets.com/img/sede_pereira.webp",
+        "source_url": "https://asvets.com/#sedes",
+        "attribution": "ASVET: fotografía de la sede Pereira publicada en su sitio oficial."
+      },
+      "published_services": [
+        "Consulta veterinaria",
+        "Hospitalización",
+        "Cirugía",
+        "Laboratorio",
+        "Rayos X",
+        "Ecografía",
+        "Estética canina y felina"
+      ],
+      "published_team": []
+    },
+    {
+      "slug": "bioveterinarios-pereira",
+      "name": "Clínica Bioveterinarios",
+      "category_slug": "veterinaria",
+      "description": "Clínica veterinaria de Pereira con sedes en la avenida Circunvalar y Corales. Publica consulta general, urgencias, especialidades, hospitalización y peluquería. El enlace de su sitio permite contactar al comercio por WhatsApp para solicitar una cita.",
+      "address": "Avenida Circunvalar #6-55, Pereira, Risaralda",
+      "phone": "+573003364543",
+      "email": null,
+      "website": "https://www.clinicabioveterinarios.com/",
+      "booking_url": "https://wa.me/qr/37554H7X4RJDA1",
+      "listing_source_url": "https://www.clinicabioveterinarios.com/",
+      "photo": {
+        "url": "https://www.clinicabioveterinarios.com/wp-content/uploads/2025/05/WhatsApp-Image-2025-04-16-at-3.08.58-PM.jpeg.png",
+        "source_url": "https://www.clinicabioveterinarios.com/",
+        "attribution": "Clínica Bioveterinarios: imagen publicada en la galería de su sitio oficial."
+      },
+      "published_services": [
+        "Consulta general",
+        "Urgencias veterinarias",
+        "Ortopedia especializada",
+        "Consulta oftalmológica",
+        "Consulta cardiológica",
+        "Fisioterapia",
+        "Neurología",
+        "Cirugía de tejidos blandos",
+        "Ecografía",
+        "Radiografía",
+        "Hospitalización",
+        "Peluquería"
+      ],
+      "published_team": []
+    },
+    {
+      "slug": "mascovet-pereira",
+      "name": "MascoVet",
+      "category_slug": "veterinaria",
+      "description": "Clínica veterinaria de Pereira cuyo sitio publica consulta general y especializada, atención a domicilio, cirugía, hospitalización y servicios diagnósticos. También ofrece vacunación y peluquería para mascotas. Las solicitudes de atención se coordinan mediante el contacto oficial del comercio.",
+      "address": "Avenida Santander #2E-41, vía Kennedy, Pereira, Risaralda",
+      "phone": "+573126128385",
+      "email": "mascovetmvp@gmail.com",
+      "website": "https://veterinariamascovet.com/",
+      "booking_url": "https://api.whatsapp.com/send?phone=573126128385",
+      "listing_source_url": "https://veterinariamascovet.com/",
+      "photo": {
+        "url": "https://veterinariamascovet.com/wp-content/uploads/2024/12/Veterinaria-Pereira-Mascovet_.png",
+        "source_url": "https://veterinariamascovet.com/",
+        "attribution": "MascoVet: fotografía publicada en su sitio oficial."
+      },
+      "published_services": [
+        "Consulta general",
+        "Consulta especializada",
+        "Veterinario a domicilio",
+        "Certificados de viaje para mascotas",
+        "Esterilización",
+        "Ecografía veterinaria",
+        "Hospitalización",
+        "Laboratorio veterinario",
+        "Medicina felina",
+        "Vacunación",
+        "Odontología veterinaria",
+        "Baño y peluquería"
+      ],
+      "published_team": []
+    },
+    {
+      "slug": "sportcenter-la-villa-pereira",
+      "name": "SportCenter La Villa",
+      "category_slug": "cancha-futbol",
+      "description": "Centro deportivo ubicado en Belmonte, en el sector de la Villa Olímpica de Pereira. Su sitio publica canchas sintéticas de fútbol y espacios para vóley playa, squash y teqball, además de formación deportiva. El comercio recibe solicitudes de reserva mediante su contacto oficial.",
+      "address": "Calle 94 #15-80, barrio Belmonte, Pereira, Risaralda",
+      "phone": "+573041190613",
+      "email": null,
+      "website": "https://sportcenter.com.co/",
+      "booking_url": "https://api.whatsapp.com/send?phone=573041190613",
+      "listing_source_url": "https://sportcenter.com.co/",
+      "photo": {
+        "url": "https://sportcenter.com.co/wp-content/uploads/2024/04/sportcenter_centro-deportivo-en-pereira-1024x678.jpg",
+        "source_url": "https://sportcenter.com.co/",
+        "attribution": "SportCenter La Villa: fotografía publicada en su sitio oficial."
+      },
+      "published_services": [
+        "Cancha de fútbol 8x8",
+        "Cancha de fútbol 6x6",
+        "Cancha de fútbol 11x11",
+        "Vóley playa",
+        "Squash",
+        "Teqball",
+        "Escuela de formación en fútbol"
+      ],
+      "published_team": []
+    },
+    {
+      "slug": "jesimoncadabeauty-pereira",
+      "name": "Jesimoncadabeauty",
+      "category_slug": "beauty-salon",
+      "description": "Peluquería y centro de belleza ubicado en Álamos, Pereira. Su perfil publica servicios de cabello, colorimetría, peinados, uñas, cejas y estética. La reserva externa se gestiona mediante el perfil comercial en Fresha.",
+      "address": "Calle 11 #23-17, Álamos, Pereira, Risaralda",
+      "phone": null,
+      "email": null,
+      "website": "https://www.fresha.com/es/a/jesimoncadabeauty-pereira-calle-11-23-17-tdj49y3a",
+      "booking_url": "https://www.fresha.com/es/a/jesimoncadabeauty-pereira-calle-11-23-17-tdj49y3a/booking?entryPoint=book_now_link",
+      "listing_source_url": "https://www.fresha.com/es/a/jesimoncadabeauty-pereira-calle-11-23-17-tdj49y3a",
+      "photo": {
+        "url": "https://images.fresha.com/locations/location-profile-images/2737037/5674365/eae691b0-0671-416c-942b-8aba6d8d119c-Jesimoncadabeauty-CO-Risaralda-Pereira-Alamos-Fresha.jpg",
+        "source_url": "https://www.fresha.com/es/a/jesimoncadabeauty-pereira-calle-11-23-17-tdj49y3a",
+        "attribution": "Jesimoncadabeauty: fotografía publicada en la galería de su perfil Fresha."
+      },
+      "published_services": [
+        "Baño de color",
+        "Peinado para ocasión",
+        "Terapia capilar de hidratación",
+        "Manicure",
+        "Pedicure",
+        "Cejas",
+        "Pestañas"
+      ],
+      "published_team": [
+        "Suri",
+        "Sofía Esteticista"
+      ]
+    },
+    {
+      "slug": "el-eden-de-la-belleza-pereira",
+      "name": "EL EDEN DE LA BELLEZA",
+      "category_slug": "beauty-salon",
+      "description": "Peluquería y salón de belleza ubicado en Providencia, Pereira. Publica servicios de cabello y peinado, colorimetría, tratamientos capilares, manicure y pedicure. Su perfil comercial en Fresha permite consultar la oferta y continuar al flujo externo de reserva.",
+      "address": "Calle 21 #19-09, Providencia, Pereira, Risaralda",
+      "phone": "+573136719032",
+      "email": null,
+      "website": "https://www.fresha.com/es/a/el-eden-de-la-belleza-pereira-calle-21-19-09-q54xntmc",
+      "booking_url": "https://www.fresha.com/es/a/el-eden-de-la-belleza-pereira-calle-21-19-09-q54xntmc/all-offer?entryPoint=book_now_link&venue=true",
+      "listing_source_url": "https://www.fresha.com/es/a/el-eden-de-la-belleza-pereira-calle-21-19-09-q54xntmc",
+      "photo": {
+        "url": "https://images.fresha.com/locations/location-profile-images/2780003/5835062/26fa57ca-18f7-4363-b6a6-48ae5665a954-ELEDENDELABELLEZA-CO-Risaralda-Pereira-Providencia-Fresha.jpg",
+        "source_url": "https://www.fresha.com/es/a/el-eden-de-la-belleza-pereira-calle-21-19-09-q54xntmc",
+        "attribution": "EL EDEN DE LA BELLEZA: fotografía publicada en la galería de su perfil Fresha."
+      },
+      "published_services": [
+        "Cepillado pelo medio",
+        "Raíz y mechas",
+        "Mascarilla capilar",
+        "Manicure",
+        "Manicure semipermanente con diseño",
+        "Pedicure",
+        "Pedicura con esmaltado semipermanente"
+      ],
+      "published_team": [
+        "Martha Estilista"
+      ]
+    },
+    {
+      "slug": "spaces-tattoo-pereira",
+      "name": "Spaces Tattoo Studio",
+      "category_slug": "tattoo-studio",
+      "description": "Estudio de tatuajes con sede en Pinares, Pereira. Su sitio publica portafolios y artistas especializados en realismo, black and grey, línea fina, microrealismo y color. La cotización y la coordinación de la cita se realizan mediante el contacto oficial del estudio.",
+      "address": "Sector Pinares, Pereira, Risaralda",
+      "phone": "+573045344076",
+      "email": null,
+      "website": "https://www.spacestattoo.com/",
+      "booking_url": "https://wa.link/bm4akl",
+      "listing_source_url": "https://www.spacestattoo.com/",
+      "photo": {
+        "url": "https://static.wixstatic.com/media/0a440f_bef709bef78d4e5e8ee7e34920afc4ea~mv2.jpeg",
+        "source_url": "https://www.spacestattoo.com/",
+        "attribution": "Spaces Tattoo Studio: imagen publicada en el portafolio de su sitio oficial."
+      },
+      "published_services": [
+        "Tatuajes personalizados",
+        "Realismo",
+        "Black and grey",
+        "Línea fina",
+        "Microrealismo",
+        "Full color"
+      ],
+      "published_team": [
+        "Sebastián Sepulveda",
+        "Daniela Batero",
+        "Luis Osorio",
+        "Santiago Sepulveda",
+        "Juan Pablo Noctem",
+        "Sebastian Serna"
+      ]
+    },
+    {
+      "slug": "estigma-tattoo-pereira",
+      "name": "Estigma tattoo",
+      "category_slug": "tattoo-studio",
+      "description": "Estudio de tatuajes y piercings ubicado en el centro de Pereira. Su sitio publica diseño personalizado, trabajos de brazo completo en color, maquillaje permanente y perforaciones. La sección de cita ofrece los datos de contacto del comercio, sin mostrar calendario ni tarifas.",
+      "address": "Carrera 6 #23-63, piso 3, Pereira, Risaralda",
+      "phone": "+573015158784",
+      "email": "alejoestigma@gmail.com",
+      "website": "https://alejoestigma.wixsite.com/estigmatattoo",
+      "booking_url": "https://alejoestigma.wixsite.com/estigmatattoo",
+      "listing_source_url": "https://alejoestigma.wixsite.com/estigmatattoo",
+      "photo": {
+        "url": "https://static.wixstatic.com/media/c93c7d_e0e21939183d4eae93d76362e46a8fc7~mv2.jpg",
+        "source_url": "https://alejoestigma.wixsite.com/estigmatattoo",
+        "attribution": "Imagen publicada en el sitio oficial de Estigma tattoo; autoría no identificada."
+      },
+      "published_services": [
+        "Diseño personalizado de tatuajes",
+        "Brazo completo en color",
+        "Maquillaje permanente",
+        "Piercings",
+        "Expansiones"
+      ],
+      "published_team": []
+    }
+  ]
+}

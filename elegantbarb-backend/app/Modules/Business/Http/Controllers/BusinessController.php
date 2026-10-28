@@ -39,6 +39,9 @@ class BusinessController extends Controller
     {
         $data = $request->validate([
             'business_category_id' => 'required|integer|exists:pgsql.platform.business_categories,id',
+            'booking_mode' => 'sometimes|required|in:internal,external',
+            'booking_url' => 'nullable|url:https|max:2048',
+            'listing_source_url' => 'nullable|url:https|max:2048',
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:pgsql.business.businesses,slug',
             'description' => 'nullable|string',
@@ -51,6 +54,7 @@ class BusinessController extends Controller
             'banner_url' => 'nullable|string',
             'primary_color' => 'nullable|string|max:20',
             'address' => 'nullable|string',
+            'is_active' => 'sometimes|boolean',
             'uses_professionals' => 'boolean',
             'uses_resources' => 'boolean',
             'services' => 'nullable|array',
@@ -71,6 +75,7 @@ class BusinessController extends Controller
             'schedule.*.closed' => 'required|boolean',
         ]);
 
+        $this->authorizeListingMetadata($request);
         $data['owner_user_id'] = $request->user()->id;
 
         if ($request->hasFile('logo')) {
@@ -93,6 +98,9 @@ class BusinessController extends Controller
         }
         $data = $request->validate([
             'name' => 'sometimes|string|max:255',
+            'booking_mode' => 'sometimes|required|in:internal,external',
+            'booking_url' => 'nullable|url:https|max:2048',
+            'listing_source_url' => 'nullable|url:https|max:2048',
             'description' => 'nullable|string',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:50',
@@ -114,6 +122,8 @@ class BusinessController extends Controller
             'opening_hours.*.end' => 'required|date_format:H:i|after:opening_hours.*.start',
         ]);
 
+        $this->authorizeListingMetadata($request);
+
         if ($request->hasFile('logo')) {
             try {
                 $this->uploadService->validateImage($request->file('logo'));
@@ -125,6 +135,13 @@ class BusinessController extends Controller
 
         $response = $this->service->update($id, $data);
         return $response->toJsonResponse();
+    }
+
+    private function authorizeListingMetadata(Request $request): void
+    {
+        if ($request->hasAny(['booking_mode', 'booking_url', 'listing_source_url'])) {
+            abort_unless($request->user()->role === \App\Models\User::ROLE_SUPERADMIN, 403, 'La publicación de canales oficiales requiere curación de la plataforma.');
+        }
     }
 
     public function destroy(int $id): JsonResponse
