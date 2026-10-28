@@ -11,6 +11,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { GoogleSignInTA } from '@/modules/auth/components/GoogleSignInTA'
 import { LoginFieldsTA } from '@/modules/auth/components/LoginFieldsTA'
 import { useLoginForm } from '@/modules/auth/composables/useLoginForm'
+import { LegalLinksTA } from '@/modules/legal/LegalLinksTA'
 
 // COMPONENT
 export const LoginPage = () => {
@@ -66,6 +67,7 @@ export const LoginPage = () => {
             {!isChallenge && <GoogleSignInTA onCredential={actions.signInWithGoogle} disabled={feedback.loading} />}
           </div>
           <p className="mt-6 flex items-center justify-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="size-3.5" aria-hidden="true" />{t('security')}</p>
+          <div className="mt-3"><LegalLinksTA /></div>
         </section>
       </div>
     </main>

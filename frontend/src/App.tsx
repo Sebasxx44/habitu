@@ -23,6 +23,8 @@ const OperationsPage = lazy(() => import('@/modules/operations/OperationsPage').
 const CheckoutReturnPage = lazy(() => import('@/modules/checkout/CheckoutReturnPage').then(module => ({ default: module.CheckoutReturnPage })))
 const GroupsPage = lazy(() => import('@/modules/groups/GroupsPage').then(module => ({ default: module.GroupsPage })))
 const LoginPage = lazy(() => import('@/pages/LoginPage').then(module => ({ default: module.LoginPage })))
+const PrivacyPage = lazy(() => import('@/modules/legal/PublicPolicyPage').then(module => ({ default: module.PrivacyPage })))
+const TermsPage = lazy(() => import('@/modules/legal/PublicPolicyPage').then(module => ({ default: module.TermsPage })))
 const SuperAdminDashboard = lazy(() => import('@/pages/superadmin/SuperAdminDashboard').then(module => ({ default: module.SuperAdminDashboard })))
 const BusinessesPage = lazy(() => import('@/pages/superadmin/BusinessesPage').then(module => ({ default: module.BusinessesPage })))
 const RolesPermissionsPage = lazy(() => import('@/pages/superadmin/RolesPermissionsPage').then(module => ({ default: module.RolesPermissionsPage })))
@@ -126,6 +128,8 @@ const App = () => {
           <ErrorBoundaryTA>
           <Suspense fallback={<PageLoading />}>
           <Routes>
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
             <Route path="/account/profile" element={<ProtectedRoute><PageWrapper><ClienteProfilePage /></PageWrapper></ProtectedRoute>} />
             <Route path="/register" element={<AccountAccessPage mode="register" />} />
             <Route path="/forgot-password" element={<AccountAccessPage mode="forgot" />} />
