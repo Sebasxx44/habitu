@@ -1,0 +1,111 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: elegantbarb-backend
+    env:
+      APP_ENV: testing
+      APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      APP_DEBUG: 'false'
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: '55439'
+      DB_DATABASE: elegantbarb_test
+      DB_USERNAME: elegantbarb_test
+      DB_PASSWORD: isolated_test_only
+      CACHE_DRIVER: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      BROADCAST_DRIVER: log
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: elegantbarb_test
+          POSTGRES_USER: elegantbarb_test
+          POSTGRES_PASSWORD: isolated_test_only
+        ports:
+          - 55439:5432
+        options: >-
+          --health-cmd "pg_isready -U elegantbarb_test -d elegantbarb_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45 # v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_pgsql, mbstring, curl, dom, fileinfo, openssl
+          coverage: none
+          tools: composer:v2
+      - name: Install locked dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Validate dependency contract
+        run: |
+          composer validate --strict
+          composer check-platform-reqs
+          composer audit --locked --no-interaction
+      - name: PHP syntax
+        run: find app config database routes tests -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null
+      - name: Tests against isolated PostgreSQL
+        run: php artisan test
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Tests
+        run: npm test
+      - name: Lint added source files
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BASE: ${{ github.event.before }}
+        run: |
+          base="${PR_BASE:-$PUSH_BASE}"
+          if [ -z "$base" ] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            echo 'Initial publication: existing source is not reformatted or linted.'
+            exit 0
+          fi
+          mapfile -d '' files < <(git diff --name-only -z --diff-filter=A "$base" HEAD -- src api | while IFS= read -r -d '' file; do
+            case "$file" in *.ts|*.tsx|*.js|*.jsx|*.mjs) printf '%s\0' "${file#frontend/}" ;; esac
+          done)
+          if [ "${#files[@]}" -gt 0 ]; then npx eslint "${files[@]}"; fi
+      - name: Build
+        run: npm run build
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+      - name: Development tooling audit
+        continue-on-error: true
+        run: npm audit --audit-level=high

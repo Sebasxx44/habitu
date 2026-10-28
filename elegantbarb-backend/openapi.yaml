@@ -1,0 +1,400 @@
+openapi: 3.0.3
+info:
+  title: ElegantBarb API
+  description: |
+    API multiservicios para ElegantBarb. Soporta reservas programadas,
+    servicios a domicilio (on-demand), wallet, suscripciones, chat,
+    tracking en tiempo real, y más.
+  version: 2.0.0
+  contact:
+    name: ElegantBarb Support
+    email: support@elegantbarb.com
+
+servers:
+  - url: http://localhost:8000/api
+    description: Local development
+  - url: https://api.elegantbarb.com/api
+    description: Production
+
+paths:
+  /health:
+    get:
+      tags: [System]
+      summary: Health check
+      responses:
+        200:
+          description: All systems healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        503:
+          description: One or more systems degraded
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, format: password }
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current user
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Current user data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /v2/businesses:
+    get:
+      tags: [Businesses]
+      summary: List businesses
+      parameters:
+        - name: lat
+          in: query
+          schema: { type: number }
+        - name: lng
+          in: query
+          schema: { type: number }
+        - name: type
+          in: query
+          schema: { type: string }
+        - name: search
+          in: query
+          schema: { type: string }
+      responses:
+        200:
+          description: List of businesses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Business'
+
+  /v2/businesses/{id}:
+    get:
+      tags: [Businesses]
+      summary: Get business detail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200:
+          description: Business detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Business'
+
+  /v2/appointments:
+    get:
+      tags: [Appointments]
+      summary: List appointments
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Appointments list
+    post:
+      tags: [Appointments]
+      summary: Create appointment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppointmentInput'
+      responses:
+        201:
+          description: Appointment created
+
+  /v2/on-demand/request:
+    post:
+      tags: [On-Demand]
+      summary: Request on-demand service
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnDemandRequestInput'
+      responses:
+        201:
+          description: Request created
+
+  /v2/wallet:
+    get:
+      tags: [Wallet]
+      summary: Get wallet balance
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Wallet data
+
+  /v2/wallet/topup:
+    post:
+      tags: [Wallet]
+      summary: Top up wallet
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount: { type: number, minimum: 5000 }
+                payment_method: { type: string, enum: [MERCADOPAGO] }
+      responses:
+        201:
+          description: Top-up initiated
+
+  /v2/mercadopago/public-key:
+    get:
+      tags: [Payments]
+      summary: Get MercadoPago public key
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Public key
+
+  /v2/chat/conversations:
+    get:
+      tags: [Chat]
+      summary: List conversations
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Conversations list
+
+  /v2/recommendations:
+    get:
+      tags: [Recommendations]
+      summary: Get personalized recommendations
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Recommendations
+
+  /v2/waitlist:
+    get:
+      tags: [Waitlist]
+      summary: My waitlist
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Waitlist entries
+    post:
+      tags: [Waitlist]
+      summary: Join waitlist
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WaitlistInput'
+      responses:
+        201:
+          description: Joined waitlist
+
+  /v2/earnings/dashboard:
+    get:
+      tags: [Earnings]
+      summary: Professional earnings dashboard
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Earnings data
+
+  /v2/webhooks:
+    get:
+      tags: [Webhooks]
+      summary: List outgoing webhooks
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Webhooks list
+    post:
+      tags: [Webhooks]
+      summary: Create webhook
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookInput'
+      responses:
+        201:
+          description: Webhook created
+
+  /auth/2fa/setup:
+    get:
+      tags: [Security]
+      summary: Generate 2FA secret
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: 2FA setup data
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status: { type: string, enum: [healthy, degraded] }
+        timestamp: { type: string, format: date-time }
+        version: { type: string }
+        checks:
+          type: object
+          properties:
+            database:
+              type: object
+              properties:
+                healthy: { type: boolean }
+                latency_ms: { type: number }
+            redis:
+              type: object
+              properties:
+                healthy: { type: boolean }
+                latency_ms: { type: number }
+            queue:
+              type: object
+              properties:
+                healthy: { type: boolean }
+                pending_jobs: { type: integer }
+                failed_jobs: { type: integer }
+            storage:
+              type: object
+              properties:
+                healthy: { type: boolean }
+                writable: { type: boolean }
+                free_bytes: { type: integer }
+
+    AuthResponse:
+      type: object
+      properties:
+        token: { type: string }
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string, format: email }
+        role: { type: string, enum: [SUPERADMIN, ADMIN_BARBERIA, BARBERO, CLIENTE] }
+        avatar: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }
+
+    Business:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+        type: { type: string }
+        address: { type: string }
+        phone: { type: string }
+        lat: { type: number }
+        lng: { type: number }
+        rating: { type: number }
+        image_url: { type: string }
+
+    AppointmentInput:
+      type: object
+      required: [business_id, service_id, appointment_date, appointment_time]
+      properties:
+        business_id: { type: integer }
+        service_id: { type: integer }
+        professional_id: { type: integer, nullable: true }
+        resource_id: { type: integer, nullable: true }
+        appointment_date: { type: string, format: date }
+        appointment_time: { type: string, format: time }
+        notes: { type: string }
+        promotion_code: { type: string }
+
+    OnDemandRequestInput:
+      type: object
+      required: [business_id, service_id, address, lat, lng]
+      properties:
+        business_id: { type: integer }
+        service_id: { type: integer }
+        professional_id: { type: integer, nullable: true }
+        address: { type: string }
+        lat: { type: number }
+        lng: { type: number }
+        notes: { type: string }
+        payment_method: { type: string, enum: [WALLET, CASH] }
+
+    WaitlistInput:
+      type: object
+      required: [business_id, service_id]
+      properties:
+        business_id: { type: integer }
+        service_id: { type: integer }
+        professional_id: { type: integer, nullable: true }
+        preferred_date: { type: string, format: date }
+        preferred_time_start: { type: string, format: time }
+        preferred_time_end: { type: string, format: time }
+
+    WebhookInput:
+      type: object
+      required: [name, url, events]
+      properties:
+        name: { type: string }
+        url: { type: string, format: uri }
+        events:
+          type: array
+          items: { type: string }

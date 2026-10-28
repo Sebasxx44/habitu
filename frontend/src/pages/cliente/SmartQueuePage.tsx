@@ -1,0 +1,28 @@
+import { ArrowLeft, Clock, RefreshCw, Ticket, Users } from 'lucide-react'
+import { ActionHeaderTA } from '@/components/TA/ActionHeaderTA'
+import { ButtonTA } from '@/components/TA/ButtonTA'
+import { StateTA } from '@/components/TA/StateTA'
+import { SkeletonTA } from '@/components/TA/SkeletonTA'
+import { useSmartQueue } from '@/composables/useSmartQueue'
+
+// CONSTANTS
+const statusLabels: Record<string, string> = { WAITING: 'Esperando', CALLED: 'Tu turno', SERVING: 'En atención', COMPLETED: 'Completado', CANCELLED: 'Cancelado' }
+const waitLabel = (minutes: number | null) => minutes === null ? 'Aún sin estimación' : `Espera estimada: ${minutes} min`
+
+// COMPONENT
+export const SmartQueuePage = () => {
+  const { selection, list, ticket } = useSmartQueue()
+  return <div className="space-y-6 pb-10">
+    <ActionHeaderTA icon={Ticket} eyebrow="Atención presencial" title="Fila digital" description="Elige un negocio y consulta los turnos de atención." actions={<ButtonTA variant="outline" disabled={list.loading || ticket.pending} onClick={() => { void list.refresh() }}><RefreshCw className="size-4" />Actualizar</ButtonTA>} />
+    <section className="surface-card grid gap-4 rounded-2xl border border-primary/10 p-5 sm:grid-cols-2" aria-label="Seleccionar negocio"><label className="text-sm">Buscar negocio<input value={selection.search} onChange={event => selection.setSearch(event.target.value)} maxLength={100} placeholder="Nombre del negocio" className="mt-2 h-11 w-full rounded-xl border border-border bg-background px-3" /></label><label className="text-sm">Negocio<select value={selection.businessId} disabled={ticket.pending} onChange={event => selection.selectBusiness(event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-border bg-background px-3"><option value="">Selecciona un negocio</option>{selection.businesses.map(business => <option key={business.id} value={business.id}>{business.name}</option>)}</select></label></section>
+    {list.error && <StateTA error title="No se pudo completar la acción" description={list.error} onRetry={() => { void list.refresh() }} />}
+    {list.loading ? <SkeletonTA variant="card" count={3} label="Cargando filas disponibles" /> : !selection.businessId ? <StateTA title="Encuentra tu fila" description="Selecciona un negocio para consultar sus turnos disponibles." /> : !selection.queue ? <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">{list.queues.map(queue => <article key={queue.id} className="surface-card space-y-4 rounded-2xl border border-primary/10 bg-card p-5"><h2 className="text-lg font-semibold">{queue.name}</h2><p className="flex items-center gap-2 text-sm text-muted-foreground"><Users className="size-4" />{queue.entries_count ?? 0} turnos activos</p><p className="flex items-center gap-2 text-sm text-muted-foreground"><Clock className="size-4" />{waitLabel(queue.estimated_wait_minutes)}</p><p className="text-sm">Turno actual: #{queue.current_number}</p><ButtonTA variant="outline" onClick={() => { void selection.view(queue.id) }}>Ver fila</ButtonTA></article>)}{list.queues.length === 0 && !list.error && <StateTA title="Sin filas disponibles" description="Este negocio aún no tiene una fila digital activa." />}</div> : <section className="space-y-5">
+      <ButtonTA variant="ghost" disabled={ticket.pending} onClick={selection.back}><ArrowLeft className="size-4" />Ver filas</ButtonTA>
+      <div className="flex flex-wrap items-center justify-between gap-4"><div><h2 className="text-xl font-semibold">{selection.queue.name}</h2><p className="mt-1 text-sm text-muted-foreground">{waitLabel(selection.queue.estimated_wait_minutes)}</p></div>{ticket.canJoin && selection.queue.status === 'ACTIVE' && !ticket.entry && <ButtonTA loading={ticket.pending} disabled={ticket.pending} onClick={() => { void ticket.join() }}><Ticket className="size-4" />{ticket.pending ? 'Reservando…' : 'Tomar turno'}</ButtonTA>}{ticket.canManage && <ButtonTA disabled={ticket.pending} onClick={() => { void ticket.callNext() }}>Llamar siguiente</ButtonTA>}</div>
+      {ticket.entry && <div role="status" className="surface-accent flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-accent p-5"><div><p className="text-sm text-muted-foreground">Tu turno</p><p className="text-2xl font-semibold">#{ticket.entry.ticket_number} · {statusLabels[ticket.entry.status]}</p></div>{['WAITING', 'CALLED'].includes(ticket.entry.status) && <ButtonTA variant="outline" disabled={ticket.pending} onClick={() => { void ticket.cancel() }}>Cancelar mi turno</ButtonTA>}</div>}
+      <div className="divide-y divide-border rounded-2xl border border-border bg-card">{selection.queue.entries?.map(entry => <div key={entry.id} className="flex flex-wrap items-center justify-between gap-3 p-4"><p className="font-medium">Turno #{entry.ticket_number}</p><span className="text-sm text-muted-foreground">{statusLabels[entry.status]}</span>{ticket.canManage && entry.status === 'CALLED' && <ButtonTA disabled={ticket.pending} variant="outline" onClick={() => { void ticket.serve(entry.id) }}>Iniciar atención</ButtonTA>}{ticket.canManage && entry.status === 'SERVING' && <ButtonTA disabled={ticket.pending} variant="outline" onClick={() => { void ticket.complete(entry.id) }}>Completar</ButtonTA>}</div>)}</div>
+      {!selection.queue.entries?.length && <StateTA title="La fila está vacía" description="Los nuevos turnos aparecerán aquí." />}
+      <p className="text-xs text-muted-foreground">Los tiempos se estiman con atenciones registradas y pueden variar. Actualiza para consultar el estado más reciente.</p>
+    </section>}
+  </div>
+}

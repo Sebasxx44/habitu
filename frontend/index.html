@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/brand/habitu/favicon.svg" />
+    <link rel="alternate icon" href="/brand/habitu/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#FBFBFF" />
+    <meta name="description" content="Tu próximo plan, reservado. Descubre y reserva servicios, espacios y experiencias con habitu." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="habitu" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="habitu" />
+    <meta property="og:site_name" content="habitu" />
+    <meta property="og:title" content="habitu · Tu próximo plan, reservado." />
+    <meta property="og:description" content="Servicios, espacios y experiencias. Más vida para tu día." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/brand/habitu/og-default-1200x630.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/brand/habitu/apple-touch-icon-180.png" />
+    <link rel="preload" href="/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <title>habitu · Tu próximo plan, reservado.</title>
+    <script>
+      (() => {
+        let preference = 'system';
+        try {
+          const saved = localStorage.getItem('elegantbarb-theme');
+          if (saved === 'light' || saved === 'dark' || saved === 'system') preference = saved;
+        } catch {
+          // The system preference remains available when browser storage is disabled.
+        }
+        const isDark = preference === 'dark' || (preference === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.add(isDark ? 'dark' : 'light');
+        document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', isDark ? '#101324' : '#FBFBFF');
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((reg) => console.log('SW registered:', reg.scope))
+            .catch((err) => console.log('SW registration failed:', err));
+        });
+      }
+    </script>
+  </body>
+</html>
