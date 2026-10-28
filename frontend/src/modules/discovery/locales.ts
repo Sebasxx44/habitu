@@ -2,6 +2,15 @@
 export const discoveryUiEs = {
   eyebrow: "SERVICIOS, ESPACIOS Y EXPERIENCIAS",
   title: "¿Qué hacemos hoy?",
+  immersiveEyebrow: "Pereira · A tu ritmo",
+  immersiveTitle: "Haz espacio\npara ti.",
+  immersiveDescription: "Lugares de Pereira para cuidarte, moverte y probar algo nuevo. Tu próximo buen momento empieza cerca.",
+  immersiveAction: "Encuentra tu plan",
+  immersiveNote: "Explora sin cuenta. Consulta las condiciones con cada negocio.",
+  howItWorks: "Cómo funciona",
+  heroCredit: "Foto: {{name}} · {{city}}",
+  heroPhotoSource: "Ver la fuente de la fotografía de {{name}} en otra pestaña",
+  heroSearchLabel: "Encuentra tu próximo plan",
   description:
     "Descubre, reserva y vive grandes momentos a tu manera.",
   loadingPlaces: "Cargando establecimientos",
@@ -155,6 +164,15 @@ export const discoveryUiEs = {
 export const discoveryUiEn: typeof discoveryUiEs = {
   eyebrow: "SERVICES, SPACES AND EXPERIENCES",
   title: "What shall we do today?",
+  immersiveEyebrow: "Pereira · At your own pace",
+  immersiveTitle: "Make time\nfor yourself.",
+  immersiveDescription: "Places in Pereira to feel good, get moving and try something new. Your next good moment starts nearby.",
+  immersiveAction: "Find your plan",
+  immersiveNote: "Explore without an account. Check conditions with each business.",
+  howItWorks: "How it works",
+  heroCredit: "Photo: {{name}} · {{city}}",
+  heroPhotoSource: "View the source of {{name}}'s photo in a new tab",
+  heroSearchLabel: "Find your next plan",
   description:
     "Discover, book and enjoy great moments your way.",
   loadingPlaces: "Loading businesses",

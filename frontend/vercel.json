@@ -16,7 +16,15 @@
       "destination": "/api/proxy?__habitu_api_path=:path*"
     },
     {
-      "source": "/:path((?!api(?:/|$)).*)",
+      "source": "/recorrido",
+      "destination": "/recorrido/index.html"
+    },
+    {
+      "source": "/recorrido/",
+      "destination": "/recorrido/index.html"
+    },
+    {
+      "source": "/:path((?!api(?:/|$)|recorrido(?:/|$)).*)",
       "destination": "/index.html"
     }
   ],

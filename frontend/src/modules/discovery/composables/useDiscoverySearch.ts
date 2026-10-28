@@ -8,8 +8,10 @@ import { trackMarketplaceEvent } from '@/modules/analytics/tracking';
 import { discoveryService } from "@/modules/discovery/services/discoveryService";
 import {
   discoveryDefaults,
+  discoveryQuery,
   readDiscoveryFilters,
 } from "@/modules/discovery/query";
+import { readDiscoveryView, withDiscoveryView } from "@/modules/discovery/services/discoveryView";
 import { useDiscoveryLocation } from "@/modules/discovery/composables/useDiscoveryLocation";
 import { useDiscoveryFavorites } from "@/modules/discovery/composables/useDiscoveryFavorites";
 import type {
@@ -36,7 +38,7 @@ export const useDiscoverySearch = (): DiscoverySearchState => {
   const navigate = useNavigate();
   const { navigation } = useDiscoveryOrigin();
   const [params, setParams] = useSearchParams();
-  const query = params.toString();
+  const query = discoveryQuery(readDiscoveryFilters(params)).toString();
   const values = useMemo(
     () => readDiscoveryFilters(new URLSearchParams(query)),
     [query],
@@ -183,7 +185,7 @@ export const useDiscoverySearch = (): DiscoverySearchState => {
       change,
       clear: () => {
         setDraft("");
-        setParams({});
+        setParams((current) => withDiscoveryView(new URLSearchParams(), readDiscoveryView(current)));
         setSuggest(false);
       },
     },

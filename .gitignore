@@ -1,5 +1,7 @@
 **/node_modules/
 **/vendor/
+!frontend/public/recorrido/vendor/
+!frontend/public/recorrido/vendor/**
 **/dist/
 **/.nuxt/
 **/.output/
@@ -17,6 +19,7 @@
 **/*.key
 **/auth.json
 **/coverage/
+**/.hyperframes/
 **/.phpunit.cache/
 **/.phpunit.result.cache
 **/bootstrap/cache/*.php

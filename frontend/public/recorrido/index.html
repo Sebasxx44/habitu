@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#fbfbff" />
+    <meta
+      name="description"
+      content="Descubre cómo explorar negocios, buscar tu próximo plan y usar HABITÜ en un recorrido visual de 36 segundos."
+    />
+    <base href="/recorrido/" />
+    <title>Así se usa HABITÜ · Recorrido</title>
+    <link rel="stylesheet" href="tour.css" />
+    <script defer src="vendor/hyperframes-player.global.js"></script>
+    <script defer src="tour.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#pasos">Saltar a los pasos escritos</a>
+    <header class="site-header">
+      <a
+        class="brand"
+        href="/cliente/explore"
+        aria-label="HABITÜ, volver a explorar"
+        >HABITÜ<span aria-hidden="true">·</span></a
+      >
+      <a class="button button-quiet" href="/cliente/explore"
+        >Volver a la app <span aria-hidden="true">↗</span></a
+      >
+    </header>
+    <main>
+      <section class="intro" aria-labelledby="tour-title">
+        <p class="eyebrow">Un vistazo a tu próximo plan</p>
+        <h1 id="tour-title">Así se usa HABITÜ.</h1>
+        <p>
+          Explora, encuentra y conecta con negocios reales. Mira el recorrido de
+          36 segundos a tu ritmo o elige un paso.
+        </p>
+      </section>
+
+      <section class="player-card" aria-labelledby="player-title">
+        <h2 id="player-title" class="sr-only">Recorrido visual de HABITÜ</h2>
+        <div class="screen">
+          <hyperframes-player
+            id="tour-player"
+            src="composition/index.html"
+            runtime-src="vendor/hyperframe.runtime.iife.js"
+            width="1920"
+            height="1080"
+            muted
+            audio-locked
+            low-power-idle
+            disable-click-to-play
+            aria-label="Demostración visual de HABITÜ"
+            aria-describedby="tour-status"
+          ></hyperframes-player>
+        </div>
+        <div
+          class="transport"
+          role="group"
+          aria-label="Controles del recorrido"
+        >
+          <button
+            id="play-toggle"
+            class="button button-primary"
+            type="button"
+            aria-controls="tour-player"
+            disabled
+          >
+            <span id="play-icon" aria-hidden="true">▶</span
+            ><span id="pause-icon" aria-hidden="true" hidden>Ⅱ</span>
+            <span id="play-label">Reproducir</span>
+          </button>
+          <output id="tour-time" for="tour-seek" aria-live="off"
+            >0:00 / 0:36</output
+          >
+          <div class="timeline">
+            <label for="tour-seek">Posición del recorrido</label>
+            <input
+              id="tour-seek"
+              type="range"
+              min="0"
+              max="36"
+              step="0.1"
+              value="0"
+              aria-controls="tour-player"
+              aria-valuetext="0:00 de 0:36"
+              disabled
+            />
+          </div>
+        </div>
+        <div class="player-notice">
+          <p id="tour-status" role="status">
+            Preparando el recorrido. Puedes leer los pasos mientras carga.
+          </p>
+          <p id="motion-hint" hidden>
+            El movimiento reducido está activo. Puedes consultar los capítulos
+            en pausa y reproducir cuando quieras.
+          </p>
+          <p id="tour-fallback" hidden>
+            El recorrido visual no está disponible ahora.
+            <a href="#pasos">Lee los pasos</a> o
+            <a href="/cliente/explore">abre la app</a>.
+          </p>
+          <noscript
+            ><p>
+              Para reproducir el recorrido necesitas JavaScript. Los pasos
+              escritos y los enlaces a la app están disponibles a continuación.
+            </p></noscript
+          >
+        </div>
+      </section>
+
+      <nav class="chapters" aria-label="Capítulos del recorrido">
+        <button
+          type="button"
+          data-start="0"
+          data-title="Explorar"
+          aria-controls="tour-player"
+          disabled
+        >
+          <span>0:00</span>Explorar
+        </button>
+        <button
+          type="button"
+          data-start="6"
+          data-title="Buscar"
+          aria-controls="tour-player"
+          disabled
+        >
+          <span>0:06</span>Buscar
+        </button>
+        <button
+          type="button"
+          data-start="12"
+          data-title="Mapa"
+          aria-controls="tour-player"
+          disabled
+        >
+          <span>0:12</span>Mapa
+        </button>
+        <button
+          type="button"
+          data-start="18"
+          data-title="Reservar"
+          aria-controls="tour-player"
+          disabled
+        >
+          <span>0:18</span>Reservar
+        </button>
+        <button
+          type="button"
+          data-start="24"
+          data-title="Cuenta"
+          aria-controls="tour-player"
+          disabled
+        >
+          <span>0:24</span>Cuenta
+        </button>
+        <button
+          type="button"
+          data-start="30"
+          data-title="Analítica"
+          aria-controls="tour-player"
+          disabled
+        >
+          <span>0:30</span>Analítica
+        </button>
+      </nav>
+
+      <section
+        id="pasos"
+        class="transcript"
+        aria-labelledby="steps-title"
+        tabindex="-1"
+      >
+        <div class="section-heading">
+          <p class="eyebrow">También en palabras</p>
+          <h2 id="steps-title">Los seis pasos del recorrido</h2>
+          <p>El contenido esencial está aquí, sin necesidad de reproducirlo.</p>
+        </div>
+        <ol>
+          <li>
+            <h3>Explorar <span>0:00–0:06</span></h3>
+            <p>
+              Conoce negocios reales desde el catálogo público. Puedes explorar
+              sin iniciar sesión y abrir cada perfil para ver su información.
+            </p>
+            <a href="/cliente/explore">Explorar negocios ↗</a>
+          </li>
+          <li>
+            <h3>Buscar <span>0:06–0:12</span></h3>
+            <p>
+              Escribe un negocio, una categoría o una zona. Usa las categorías y
+              los filtros para encontrar lo que buscas.
+            </p>
+            <a href="/cliente/explore?q=veterinaria">Probar una búsqueda ↗</a>
+          </li>
+          <li>
+            <h3>Mapa <span>0:12–0:18</span></h3>
+            <p>
+              Cambia a mapa para ver los negocios con ubicación precisa
+              publicada. Abre un marcador o un grupo para consultar perfiles; si
+              falta un punto, la app lo indica.
+            </p>
+            <a href="/cliente/explore?view=map">Abrir el mapa ↗</a>
+          </li>
+          <li>
+            <h3>Reservar <span>0:18–0:24</span></h3>
+            <p>
+              Abre el perfil y consulta su opción de reserva. Los negocios con
+              reserva externa te llevan a su canal oficial; la agenda de HABITÜ
+              se usa cuando el negocio la tiene habilitada.
+            </p>
+            <a href="/cliente/explore">Elegir un negocio ↗</a>
+          </li>
+          <li>
+            <h3>Cuenta <span>0:24–0:30</span></h3>
+            <p>
+              Inicia sesión o crea una cuenta para guardar favoritos y acceder a
+              tus reservas. Cada persona conserva los accesos de su cuenta.
+            </p>
+            <a href="/login">Entrar a mi cuenta ↗</a>
+          </li>
+          <li>
+            <h3>Analítica <span>0:30–0:36</span></h3>
+            <p>
+              Como cliente, encuentra tu actividad en Analítica. El inicio queda
+              dedicado a descubrir negocios, promociones y accesos útiles.
+            </p>
+            <a href="/cliente/analytics">Consultar mi analítica ↗</a>
+          </li>
+        </ol>
+      </section>
+      <section class="final-cta" aria-label="Continuar en HABITÜ">
+        <div>
+          <h2>Ahora, encuentra tu próximo plan.</h2>
+          <p>El catálogo está abierto para que empieces a explorar.</p>
+        </div>
+        <a class="button button-primary" href="/cliente/explore"
+          >Explorar HABITÜ <span aria-hidden="true">↗</span></a
+        >
+      </section>
+    </main>
+    <footer>HABITÜ · Tu tiempo, tu plan.</footer>
+  </body>
+</html>

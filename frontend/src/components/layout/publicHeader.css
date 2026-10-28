@@ -1,0 +1,28 @@
+.habitu-public-header {
+  top: calc(4px + env(safe-area-inset-top));
+  right: max(8px, env(safe-area-inset-right));
+  left: max(8px, env(safe-area-inset-left));
+  height: 52px;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: 8px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 999px;
+  background: hsl(var(--card));
+  box-shadow: 0 8px 28px rgb(8 18 35 / 0.1);
+}
+
+@media (min-width: 640px) {
+  .habitu-public-header {
+    right: max(16px, env(safe-area-inset-right));
+    left: max(16px, env(safe-area-inset-left));
+    padding-inline: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .habitu-public-header {
+    top: calc(12px + env(safe-area-inset-top));
+    height: 64px;
+  }
+}

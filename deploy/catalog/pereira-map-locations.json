@@ -1,0 +1,82 @@
+[
+  {
+    "slug": "asvet-pereira",
+    "name": "ASVET Pereira",
+    "address": "Carrera 12B #08-48, barrio Los Rosales, Pereira, Risaralda",
+    "lat": 4.808318,
+    "lng": -75.6859568,
+    "source_url": "https://maps.google.com/maps?cid=11162701187051253170&output=embed",
+    "precision": "published",
+    "reviewed_at": "2026-10-28"
+  },
+  {
+    "slug": "bioveterinarios-pereira",
+    "name": "Clínica Bioveterinarios",
+    "address": "Avenida Circunvalar #6-55, Pereira, Risaralda",
+    "lat": 4.8064937,
+    "lng": -75.6844859,
+    "source_url": "https://maps.google.com/maps?cid=5117289617695122218&output=embed",
+    "precision": "published",
+    "reviewed_at": "2026-10-28"
+  },
+  {
+    "slug": "mascovet-pereira",
+    "name": "MascoVet",
+    "address": "Avenida Santander #2E-41, vía Kennedy, Pereira, Risaralda",
+    "lat": 4.8092897,
+    "lng": -75.6779127,
+    "source_url": "https://maps.google.com/maps?cid=8204869138986111763&output=embed",
+    "precision": "published",
+    "reviewed_at": "2026-10-28"
+  },
+  {
+    "slug": "sportcenter-la-villa-pereira",
+    "name": "SportCenter La Villa",
+    "address": "Calle 94 #15-80, barrio Belmonte, Pereira, Risaralda",
+    "lat": 4.8081062,
+    "lng": -75.7559749,
+    "source_url": "https://maps.google.com/maps?cid=15576236326584023911&output=embed",
+    "precision": "published",
+    "reviewed_at": "2026-10-28"
+  },
+  {
+    "slug": "jesimoncadabeauty-pereira",
+    "name": "Jesimoncadabeauty",
+    "address": "Calle 11 #23-17, Álamos, Pereira, Risaralda",
+    "lat": 4.79991579,
+    "lng": -75.68862152,
+    "source_url": "https://www.fresha.com/es/a/jesimoncadabeauty-pereira-calle-11-23-17-tdj49y3a",
+    "precision": "published",
+    "reviewed_at": "2026-10-28"
+  },
+  {
+    "slug": "el-eden-de-la-belleza-pereira",
+    "name": "EL EDEN DE LA BELLEZA",
+    "address": "Calle 21 #19-09, Providencia, Pereira, Risaralda",
+    "lat": 4.80454969,
+    "lng": -75.69700623,
+    "source_url": "https://www.fresha.com/es/a/el-eden-de-la-belleza-pereira-calle-21-19-09-q54xntmc",
+    "precision": "published",
+    "reviewed_at": "2026-10-28"
+  },
+  {
+    "slug": "spaces-tattoo-pereira",
+    "name": "Spaces Tattoo Studio",
+    "address": "Sector Pinares, Pereira, Risaralda",
+    "lat": 4.8051836,
+    "lng": -75.6886131,
+    "source_url": "https://maps.google.com/maps?cid=8345476560762863007&output=embed",
+    "precision": "published",
+    "reviewed_at": "2026-10-28"
+  },
+  {
+    "slug": "estigma-tattoo-pereira",
+    "name": "Estigma tattoo",
+    "address": "Carrera 6 #23-63, piso 3, Pereira, Risaralda",
+    "lat": 4.8158816,
+    "lng": -75.6980423,
+    "source_url": "https://maps.google.com/maps?cid=5398430206595381819&output=embed",
+    "precision": "published",
+    "reviewed_at": "2026-10-28"
+  }
+]

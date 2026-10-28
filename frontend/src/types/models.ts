@@ -32,8 +32,8 @@ export interface Business {
   is_active?: boolean
   main_branch?: Branch
   mainBranch?: Branch
-  latitude?: number
-  longitude?: number
+  latitude?: string | number | null
+  longitude?: string | number | null
 }
 
 export interface BusinessCategory {
@@ -54,6 +54,8 @@ export interface Branch {
   email?: string
   lat?: string | number | null
   lng?: string | number | null
+  latitude?: string | number | null
+  longitude?: string | number | null
   is_main_branch?: boolean
   is_active?: boolean
 }

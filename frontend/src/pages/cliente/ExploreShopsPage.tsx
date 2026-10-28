@@ -15,6 +15,7 @@ import { DiscoveryHeroTA } from '@/modules/discovery/components/DiscoveryHeroTA'
 import { DiscoveryCategoriesTA } from '@/modules/discovery/components/DiscoveryCategoriesTA'
 import { useDiscoveryOrigin } from '@/modules/discovery/composables/useDiscoveryOrigin'
 import { useDiscoverySearch } from '@/modules/discovery/composables/useDiscoverySearch'
+import { useDiscoveryView } from '@/modules/discovery/composables/useDiscoveryView'
 import { discoveryDay } from '@/modules/discovery/query'
 import { useBusinessCategories } from '@/hooks/useBusinessCategories'
 import { cn } from '@/lib/utils'
@@ -29,6 +30,7 @@ export const ExploreShopsPage = () => {
   const { t: ui } = useTranslation('discoveryUi')
   // COMPOSABLES
   const { results, filters, search, location, favorites } = useDiscoverySearch()
+  const { state: { view }, actions: { setView } } = useDiscoveryView()
   const { categories, error: categoryError } = useBusinessCategories()
   const { identity } = useRequireAccount()
   const { navigation } = useDiscoveryOrigin()
@@ -36,7 +38,6 @@ export const ExploreShopsPage = () => {
   const navigate = useNavigate()
   // STATE
   const [showFilters, setShowFilters] = useState(false)
-  const [view, setView] = useState<'list' | 'map'>('list')
   const [selectedId, setSelectedId] = useState<number | null>(null)
   // LIFECYCLE
   const legacyCategory = params.get('category')

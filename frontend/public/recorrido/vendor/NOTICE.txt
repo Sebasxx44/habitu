@@ -1,0 +1,14 @@
+Hyperframes player and runtime 0.8.214
+https://github.com/heygen-com/hyperframes
+Apache-2.0; see LICENSE.hyperframes.
+
+GSAP 3.14.2 (composition/assets/gsap.min.js)
+https://gsap.com/standard-license/
+Copyright 2025 GreenSock. License notice retained in the distributed file.
+
+Manrope variable font (composition/assets/fonts)
+SIL Open Font License; see fonts/Manrope-OFL.txt.
+
+Screen captures: public HABITÜ interface, captured with Hyperframes on 2026-10-28.
+Business photographs shown within those captures remain attributed to their
+publishers in HABITÜ's public business profiles and source catalog.

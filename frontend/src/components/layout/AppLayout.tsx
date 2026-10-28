@@ -4,11 +4,10 @@ import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher'
 import { FavoritesProvider } from '@/modules/favorites/FavoritesProvider'
 import { useState, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, LogOut, Menu, Search, User as UserIcon } from 'lucide-react'
+import { ChevronLeft, ChevronRight, LogOut, Menu, PlayCircle, User as UserIcon } from 'lucide-react'
 import { useAuth } from '@/App'
 import type { User } from '@/types/auth'
 import { ButtonTA } from '@/components/TA/ButtonTA'
-import { InputTA } from '@/components/TA/InputTA'
 import { guestNavigation, primaryClientNavigation, visibleNavigation } from '@/components/TA/navigation'
 import { accountPath } from '@/modules/auth/services/returnPath'
 import { guestHome } from '@/modules/auth/services/routeAccess'
@@ -23,6 +22,7 @@ import { HabituLogo } from '@/components/ui/HabituLogo'
 import { cn } from '@/lib/utils'
 import { useMobileLayout } from '@/composables/layout/useMobileLayout'
 import { uniqueNavigationItems } from '@/composables/layout/navigationItems'
+import { discoveryGuidePath } from '@/modules/discovery/hero/content'
 
 // TYPES
 interface SidebarProps { collapsed: boolean; onCollapse: () => void; user: User | null; desktop?: boolean; onNavigate?: () => void }
@@ -60,36 +60,36 @@ export const Sidebar = ({ collapsed, onCollapse, user, desktop = false, onNaviga
 
 export const Topbar = ({ sidebarCollapsed, user }: TopbarProps) => {
   const { t } = useTranslation()
+  const { t: ui } = useTranslation('discoveryUi')
   const { logout, permissions } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const [query, setQuery] = useState('')
   const isClient = !user || user.role === 'CLIENTE'
   const clientItems = user ? primaryClientNavigation(permissions) : guestNavigation()
   const accountSearch = `?${new URLSearchParams({ returnTo: location.pathname + location.search + location.hash })}`
   const profilePath = user ? '/account/profile' : '/login'
   const canOpenAccount = Boolean(user)
   return (
-    <header className={cn('fixed left-0 right-0 top-0 z-30 flex h-[calc(56px+env(safe-area-inset-top))] items-center justify-between gap-1 border-b border-border bg-card pt-[env(safe-area-inset-top)] pl-[max(8px,env(safe-area-inset-left))] pr-[max(8px,env(safe-area-inset-right))] sm:gap-3 sm:px-7 lg:h-[calc(76px+env(safe-area-inset-top))] lg:px-9', !isClient && (sidebarCollapsed ? 'lg:left-[76px]' : 'lg:left-[248px]'))}>
+    <header className={cn('fixed z-30 flex items-center justify-between gap-1 sm:gap-3', isClient ? 'habitu-public-header' : 'left-0 right-0 top-0 h-[calc(56px+env(safe-area-inset-top))] border-b border-border bg-card pt-[env(safe-area-inset-top)] pl-[max(8px,env(safe-area-inset-left))] pr-[max(8px,env(safe-area-inset-right))] sm:px-7 lg:h-[calc(76px+env(safe-area-inset-top))] lg:px-9', !isClient && (sidebarCollapsed ? 'lg:left-[76px]' : 'lg:left-[248px]'))}>
       <div className="flex min-w-0 flex-1 items-center gap-2 xl:gap-5">
         <SheetTrigger render={<ButtonTA variant="ghost" size="icon" className={cn('size-11 shrink-0', !isClient && 'lg:hidden')} aria-label={t('shared.openMenu')} />}><Menu className="size-5" aria-hidden="true" /></SheetTrigger>
         {isClient ? <>
           <Link to={user ? '/cliente/dashboard' : guestHome} aria-label={t('navigation.home')} className="inline-flex min-h-12 min-w-0 shrink-0 items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"><HabituLogo variant="horizontal" decorative className="w-[88px] sm:w-[120px]" /></Link>
-          <nav aria-label={t('shared.marketplaceNav')} className="ml-2 hidden shrink-0 items-center gap-1 lg:flex xl:gap-2">{clientItems.map(item => {
+          <nav aria-label={t('shared.marketplaceNav')} className="ml-2 hidden shrink-0 items-center gap-1 rounded-full bg-secondary/70 p-1 lg:flex xl:gap-2">{clientItems.map(item => {
             const active = location.pathname === item.path || location.pathname.startsWith(`${item.path}/`)
-            return <Link key={item.path} to={item.path} aria-current={active ? 'page' : undefined} className={cn('relative inline-flex min-h-11 items-center gap-2 rounded-xl px-2.5 text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary xl:px-3', active ? 'bg-habitu-blue text-white shadow-sm shadow-habitu-blue/20' : 'text-foreground/80 hover:bg-secondary')}><item.icon className="hidden size-4 xl:block" aria-hidden="true" />{item.label}</Link>
+            return <Link key={item.path} to={item.path} aria-current={active ? 'page' : undefined} className={cn('relative inline-flex min-h-11 items-center gap-2 rounded-full px-2.5 text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary motion-reduce:transition-none xl:px-3', active ? 'bg-habitu-blue text-white' : 'text-foreground/80 hover:bg-card')}><item.icon className="hidden size-4 xl:block" aria-hidden="true" />{item.label}</Link>
           })}</nav>
-          <form className="relative ml-auto hidden w-full max-w-[240px] 2xl:block" role="search" onSubmit={event => { event.preventDefault(); navigate(`/cliente/explore${query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ''}`) }}><Search className="pointer-events-none absolute left-3 top-3.5 size-4 text-primary" aria-hidden="true" /><InputTA aria-label={t('shared.search')} placeholder={t('shared.searchPlaceholder')} value={query} onChange={event => setQuery(event.target.value)} className="bg-background pl-10 pr-4 text-xs" /></form>
         </> : <div className="min-w-0"><p className="truncate text-xs font-medium text-muted-foreground">{user ? t(`roles.${user.role}`) : 'habitu'}</p><p className="mt-1 hidden text-[10px] text-muted-foreground/80 sm:block">{t('shared.tagline')}</p></div>}
       </div>
+      {isClient && <ButtonTA variant="ghost" render={<a href={discoveryGuidePath} />} nativeButton={false} className="hidden shrink-0 gap-2 rounded-full px-3 text-xs text-foreground lg:inline-flex"><PlayCircle className="size-4 text-primary" aria-hidden="true" />{ui('howItWorks')}</ButtonTA>}
       <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-        <div className="hidden items-center gap-1 sm:flex"><LanguageSwitcher /><ThemeToggle /></div>
+        <div className={cn('hidden items-center gap-1', isClient ? 'xl:flex' : 'sm:flex')}><LanguageSwitcher /><ThemeToggle /></div>
         {user && <><div className="hidden sm:block"><RealtimeStatusTA /></div><NotificationBellTA isClient={isClient} /></>}
-        {!user && <Link to={accountPath('/login', accountSearch)} className="inline-flex min-h-11 shrink-0 items-center rounded-xl px-2 text-xs font-semibold text-primary sm:px-3">{t('authUi:signIn')}</Link>}
+        {!user && <Link to={accountPath('/login', accountSearch)} className="inline-flex min-h-12 shrink-0 items-center rounded-full bg-primary px-3 text-xs font-semibold text-primary-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4">{t('authUi:signIn')}</Link>}
         <span className="mx-2 hidden h-6 w-px bg-border sm:block" />
         <DropdownMenu>
           <DropdownMenuTrigger render={<ButtonTA variant="ghost" size="icon" className="size-11" aria-label={t('shared.accountMenu')}><Avatar className="size-8 rounded-full">{user?.avatar_url && <AvatarImage src={user.avatar_url} alt="" className="object-cover" />}<AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">{user ? user.name.slice(0, 2).toUpperCase() : <UserIcon className="size-4" />}</AvatarFallback></Avatar></ButtonTA>} />
-          <DropdownMenuContent align="end" className="w-56 rounded-xl p-1.5"><DropdownMenuGroup><DropdownMenuLabel className="p-3">{user?.name ?? t('authUi:guest')}</DropdownMenuLabel><DropdownMenuSeparator />{canOpenAccount && <DropdownMenuItem className="min-h-11 rounded-lg" onClick={() => navigate(profilePath)}><UserIcon />{t('shared.myAccount')}</DropdownMenuItem>}{user ? <DropdownMenuItem className="min-h-11 rounded-lg" onClick={logout}><LogOut />{t('auth.logout')}</DropdownMenuItem> : <><DropdownMenuItem className="min-h-11 rounded-lg" onClick={() => navigate(accountPath('/login', accountSearch))}>{t('authUi:signIn')}</DropdownMenuItem><DropdownMenuItem className="min-h-11 rounded-lg" onClick={() => navigate(accountPath('/register', accountSearch))}>{t('authUi:registerLink')}</DropdownMenuItem></>}</DropdownMenuGroup><div className="flex items-center justify-between border-t border-border px-2 pt-2 sm:hidden"><LanguageSwitcher /><ThemeToggle /></div></DropdownMenuContent>
+          <DropdownMenuContent align="end" className="w-56 rounded-xl p-1.5"><DropdownMenuGroup><DropdownMenuLabel className="p-3">{user?.name ?? t('authUi:guest')}</DropdownMenuLabel><DropdownMenuSeparator />{canOpenAccount && <DropdownMenuItem className="min-h-11 rounded-lg" onClick={() => navigate(profilePath)}><UserIcon />{t('shared.myAccount')}</DropdownMenuItem>}{user ? <DropdownMenuItem className="min-h-11 rounded-lg" onClick={logout}><LogOut />{t('auth.logout')}</DropdownMenuItem> : <><DropdownMenuItem className="min-h-11 rounded-lg" onClick={() => navigate(accountPath('/login', accountSearch))}>{t('authUi:signIn')}</DropdownMenuItem><DropdownMenuItem className="min-h-11 rounded-lg" onClick={() => navigate(accountPath('/register', accountSearch))}>{t('authUi:registerLink')}</DropdownMenuItem></>}</DropdownMenuGroup><div className={cn('flex items-center justify-between border-t border-border px-2 pt-2', isClient ? 'xl:hidden' : 'sm:hidden')}><LanguageSwitcher /><ThemeToggle /></div></DropdownMenuContent>
         </DropdownMenu>
       </div>
     </header>

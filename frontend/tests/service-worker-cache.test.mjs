@@ -104,6 +104,10 @@ test("API, authenticated requests, external providers and mutations bypass the c
   for (const [path, options] of [
     ["/api/auth/me", {}],
     ["/api", {}],
+    ["/recorrido", { mode: "navigate" }],
+    ["/recorrido/", { mode: "navigate" }],
+    ["/recorrido/composition/index.html", { mode: "navigate" }],
+    ["/recorrido/vendor/hyperframe.runtime.iife.js", {}],
     ["https://accounts.google.com/gsi/client", {}],
     ["/index.html", { method: "POST" }],
     [

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'elegantbarb-v4';
+const CACHE_NAME = 'elegantbarb-v5';
 const STATIC_ASSETS = [
   '/index.html',
   '/manifest.json',
@@ -46,7 +46,7 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin ||
-      /^\/api(?:\/|$)/.test(url.pathname) || request.headers.has('Authorization')) return;
+      /^\/(?:api|recorrido)(?:\/|$)/.test(url.pathname) || request.headers.has('Authorization')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(fetch(request, { cache: 'no-store' }).then(async (response) => {
