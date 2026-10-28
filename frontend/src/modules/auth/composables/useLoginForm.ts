@@ -2,7 +2,7 @@ import { isAxiosError } from "axios";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
-import { safeReturnPath } from "@/modules/auth/services/returnPath";
+import { authenticatedDestination } from "@/modules/auth/services/routeAccess";
 import { useAuth } from "@/contexts/AuthContext";
 import type { User } from "@/types/auth";
 import type {
@@ -35,13 +35,10 @@ export const useLoginForm = (): LoginFormResult => {
 
   // ACTIONS
   const routeByRole = (role: User["role"]) => {
-    const destination =
-      safeReturnPath(new URLSearchParams(location.search).get("returnTo")) ?? {
-            SUPERADMIN: "/superadmin/dashboard",
-            ADMIN_BARBERIA: "/admin/dashboard",
-            PROFESSIONAL: "/professional/dashboard",
-            CLIENTE: "/cliente/dashboard",
-          }[role];
+    const destination = authenticatedDestination(
+      role,
+      new URLSearchParams(location.search).get("returnTo"),
+    );
     navigate(destination, { replace: true });
   };
 

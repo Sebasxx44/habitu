@@ -2,6 +2,7 @@ import { useTheme } from '@/components/theme-provider';
 import i18n from '@/i18n';
 import {
   createContext,
+  startTransition,
   useCallback,
   useContext,
   useEffect,
@@ -16,6 +17,8 @@ import {
 } from "@/services/auth/authService";
 import type { GoogleCredentials, User } from "@/types/auth";
 import type { AppNotification } from "@/types/notifications";
+import { useNavigate } from "react-router-dom";
+import { guestHome } from "@/modules/auth/services/routeAccess";
 
 // Types
 interface AuthContextValue {
@@ -61,6 +64,7 @@ export const useNotifications = (): NotificationContextValue => {
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { setTheme } = useTheme();
+  const navigate = useNavigate();
   // State
   const [user, setUser] = useState<User | null>(null);
   const [permissions, setPermissions] = useState<string[]>([]);
@@ -133,8 +137,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    void authService.logout().catch(() => undefined);
-    clearSession();
+    startTransition(() => {
+      navigate(guestHome, { replace: true });
+      void authService.logout().catch(() => undefined);
+      clearSession();
+    });
   };
 
   const markNotificationsRead = () => {
@@ -152,6 +159,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Lifecycle
+  useEffect(() => {
+    const syncClearedSession = () => {
+      if (httpService.getToken()) return;
+      sessionVersion.current += 1;
+      setUser(null);
+      setPermissions([]);
+      setNotifications([]);
+      setUnreadCount(0);
+    };
+    window.addEventListener("habitu:session-changed", syncClearedSession);
+    return () => window.removeEventListener("habitu:session-changed", syncClearedSession);
+  }, []);
+
   useEffect(() => {
     let active = true;
     const version = sessionVersion.current;

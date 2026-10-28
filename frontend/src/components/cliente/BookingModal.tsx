@@ -4,12 +4,15 @@ import { trackMarketplaceEvent } from '@/modules/analytics/tracking'
 import { ArrowLeft, ArrowRight, CalendarPlus, Check, MapPin, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/App'
+import { useRequireAccount } from '@/modules/auth/composables/useRequireAccount'
 import { ActionHeaderTA } from '@/components/TA/ActionHeaderTA'
 import { ButtonTA } from '@/components/TA/ButtonTA'
 import { PremiumModal } from '@/components/premium/PremiumModal'
 import { DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { BookingServiceStepTA, BookingProfessionalStepTA, BookingDateStepTA, bookingLongDate, bookingMoney } from '@/components/cliente/booking/BookingStepsTA'
 import { BookingSummaryTA } from '@/components/cliente/booking/BookingSummaryTA'
+import { BookingGuestSummaryTA } from '@/components/cliente/booking/BookingGuestSummaryTA'
+import { useBookingAccount } from '@/composables/booking/useBookingAccount'
 import { useBookingSelection } from '@/composables/booking/useBookingSelection'
 import { useBookingCheckout } from '@/composables/booking/useBookingCheckout'
 import { downloadBookingCalendar } from '@/composables/booking/calendar'
@@ -38,17 +41,17 @@ const BookingFlow = ({ onClose, shop, professionals, services, resources, initia
   const { t } = useTranslation('marketplace')
   const trackingId = useRef(crypto.randomUUID())
   const navigate = useNavigate()
-  const { user, permissions } = useAuth()
   const flow = useBookingSelection(shop, services, professionals, resources, initialContext)
+  const account = useBookingAccount(shop.id, flow, initialContext?.promoCode ?? '', initialContext?.source)
   const slot = flow.journey.selectedSlot
-  const quoteRequest = flow.journey.step === 'review' && flow.journey.request && slot ? { ...flow.journey.request, duration_minutes: slot.duration_minutes, start_time: slot.start_time.slice(0, 5), professional_id: slot.professional_id ?? flow.journey.request.professional_id, resource_id: slot.resource_id ?? flow.journey.request.resource_id } : null
+  const quoteRequest = account.identity.authenticated && flow.journey.step === 'review' && flow.journey.request && slot ? { ...flow.journey.request, duration_minutes: slot.duration_minutes, start_time: slot.start_time.slice(0, 5), professional_id: slot.professional_id ?? flow.journey.request.professional_id, resource_id: slot.resource_id ?? flow.journey.request.resource_id } : null
   const checkout = useBookingCheckout(quoteRequest, initialContext?.promoCode ?? '', flow.actions.reloadAvailability)
   const { appointment, submitting } = checkout.submission
   useEffect(() => { void trackMarketplaceEvent('booking_start', { source: initialContext?.source, business_id: shop.id, service_id: flow.selection.serviceId ?? undefined, dedupe_key: trackingId.current }) }, [shop.id, flow.selection.serviceId, initialContext?.source])
   useEffect(() => { if (slot) void trackMarketplaceEvent('slot_selected', { source: initialContext?.source, business_id: shop.id, service_id: flow.selection.serviceId ?? undefined, dedupe_key: `${trackingId.current}:${flow.selection.date}:${slot.start_time}:${slot.resource_id ?? ''}` }) }, [slot, shop.id, flow.selection.serviceId, flow.selection.date, initialContext?.source])
   useEffect(() => { if (appointment) void trackMarketplaceEvent('booking_confirmed', { source: initialContext?.source, business_id: shop.id, service_id: flow.selection.serviceId ?? undefined, appointment_id: appointment.id, dedupe_key: String(appointment.id) }) }, [appointment, shop.id, flow.selection.serviceId, initialContext?.source])
   const branches: BookingBranch[] = (shop.branches?.length ? shop.branches : [shop.main_branch ?? shop.mainBranch].filter((branch): branch is BookingBranch => !!branch)).filter((branch) => branch.is_active !== false)
-  const canBook = user?.role === 'SUPERADMIN' || permissions.includes('appointments.create')
+  const canBook = account.identity.canBook
   const close = () => { if (!submitting) onClose() }
   const address = appointment?.branch?.address ?? flow.journey.branch?.address ?? shop.address
   const calendar = () => {
@@ -67,18 +70,22 @@ const BookingFlow = ({ onClose, shop, professionals, services, resources, initia
       <div className="flex flex-wrap gap-2"><ButtonTA variant="outline" className="flex-1" onClick={calendar}><CalendarPlus className="size-4" /> {t('booking.calendar')}</ButtonTA>{address && <ButtonTA variant="outline" className="flex-1"  render={<a target="_blank" rel="noopener noreferrer" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`} />} nativeButton={false}><MapPin className="size-4" /> {t('booking.map')}</ButtonTA>}</div>
     </div> : <>
       <div className="min-h-0 space-y-6 overflow-y-auto overscroll-contain p-5 sm:p-8">
-        <nav aria-label={t('booking.steps')} className="flex items-center gap-2">{flow.journey.steps.map((step, index) => <button key={step} disabled={index > flow.journey.index || submitting} aria-current={step === flow.journey.step ? 'step' : undefined} onClick={() => flow.actions.step(step)} className={cn('flex min-h-10 flex-1 items-center gap-2 rounded-lg text-left text-[11px] sm:text-xs', step === flow.journey.step ? 'font-semibold text-primary' : 'text-muted-foreground')}><span className={cn('grid size-6 shrink-0 place-items-center rounded-full border text-[10px]', index <= flow.journey.index ? 'border-primary bg-primary text-primary-foreground' : 'border-border')}>{index < flow.journey.index ? <Check className="size-3" /> : index + 1}</span><span>{t(step === 'datetime' && flow.journey.requiresResource ? 'booking.resourceShort' : shortLabels[step])}</span></button>)}</nav>
+        <nav aria-label={t('booking.steps')} className="flex items-start gap-1 sm:items-center sm:gap-2">{flow.journey.steps.map((step, index) => <button key={step} disabled={index > flow.journey.index || submitting} aria-current={step === flow.journey.step ? 'step' : undefined} onClick={() => flow.actions.step(step)} className={cn('flex min-h-10 min-w-0 flex-1 flex-col items-center gap-1 rounded-lg text-center text-[10px] sm:flex-row sm:gap-2 sm:text-left sm:text-xs', step === flow.journey.step ? 'font-semibold text-primary' : 'text-muted-foreground')}><span className={cn('grid size-6 shrink-0 place-items-center rounded-full border text-[10px]', index <= flow.journey.index ? 'border-primary bg-primary text-primary-foreground' : 'border-border')}>{index < flow.journey.index ? <Check className="size-3" /> : index + 1}</span><span className="block w-full min-w-0 truncate sm:w-auto">{t(step === 'datetime' && flow.journey.requiresResource ? 'booking.resourceShort' : shortLabels[step])}</span></button>)}</nav>
         <ActionHeaderTA title={t(flow.journey.step === 'datetime' && flow.journey.requiresResource ? 'booking.resource' : labels[flow.journey.step])} description={t(flow.journey.step === 'review' ? 'booking.summaryDescription' : 'booking.stepDescription')} />
         {flow.notice && <p role="status" className="rounded-xl border border-border bg-secondary/40 p-3 text-xs leading-relaxed text-muted-foreground">{t('booking.invalidContext')}</p>}
         {flow.journey.step === 'service' && <BookingServiceStepTA flow={flow} services={services} branches={branches} />}
         {flow.journey.step === 'professional' && <BookingProfessionalStepTA flow={flow} />}
         {flow.journey.step === 'datetime' && <BookingDateStepTA flow={flow} />}
-        {flow.journey.step === 'review' && <BookingSummaryTA business={shop} flow={flow} checkout={checkout} />}
-        {!canBook && <p role="alert" className="text-sm text-destructive">{t('booking.noPermission')}</p>}
+        {flow.journey.step === 'review' && (account.identity.authenticated ? <BookingSummaryTA business={shop} flow={flow} checkout={checkout} /> : <BookingGuestSummaryTA business={shop} flow={flow} />)}
+        {account.identity.authenticated && !canBook && <p role="alert" className="text-sm text-destructive">{t('booking.noPermission')}</p>}
       </div>
-      <div className="flex shrink-0 items-center gap-3 border-t border-border bg-card/95 px-5 py-4 backdrop-blur sm:px-8">{flow.journey.index > 0 && <ButtonTA variant="outline" disabled={submitting} onClick={flow.actions.back}><ArrowLeft className="size-4" /><span className="sr-only sm:not-sr-only">{t('booking.back')}</span></ButtonTA>}<div className="min-w-0 flex-1">{flow.journey.service && <><p className="truncate text-xs font-medium">{flow.journey.service.name}</p><p className="mt-1 text-xs text-muted-foreground">{flow.journey.step === 'review' && checkout.summary.quote ? bookingMoney(checkout.summary.quote.total, checkout.summary.quote.currency) : t('booking.minutes', { count: slot?.duration_minutes ?? flow.selection.durationMinutes })}</p></>}</div>{flow.journey.step === 'review' ? <ButtonTA disabled={!canBook || !checkout.summary.quote || !checkout.payment.ready || checkout.summary.loading || submitting || !!appointment} onClick={() => void checkout.actions.confirm()}>{t(submitting ? 'booking.confirming' : 'booking.confirm')}</ButtonTA> : <ButtonTA disabled={!flow.journey.canContinue || submitting} onClick={flow.actions.next}>{t('booking.next')} <ArrowRight className="size-4" /></ButtonTA>}</div>
+      <div className="flex shrink-0 flex-wrap items-center gap-3 border-t border-border bg-card/95 px-5 py-4 backdrop-blur sm:px-8">{flow.journey.index > 0 && <ButtonTA variant="outline" disabled={submitting} onClick={flow.actions.back}><ArrowLeft className="size-4" /><span className="sr-only sm:not-sr-only">{t('booking.back')}</span></ButtonTA>}<div className="min-w-0 flex-1">{flow.journey.service && <><p className="truncate text-xs font-medium">{flow.journey.service.name}</p><p className="mt-1 text-xs text-muted-foreground">{flow.journey.step === 'review' && checkout.summary.quote ? bookingMoney(checkout.summary.quote.total, checkout.summary.quote.currency) : t('booking.minutes', { count: slot?.duration_minutes ?? flow.selection.durationMinutes })}</p></>}</div>{flow.journey.step === 'review' ? account.identity.authenticated ? <ButtonTA disabled={!canBook || !checkout.summary.quote || !checkout.payment.ready || checkout.summary.loading || submitting || !!appointment} onClick={() => { if (account.actions.requireAccount()) void checkout.actions.confirm() }}>{t(submitting ? 'booking.confirming' : 'booking.confirm')}</ButtonTA> : <ButtonTA disabled={!slot || flow.availability.loading} onClick={account.actions.requireAccount}>{t('booking.signInConfirm')}<ArrowRight className="size-4" /></ButtonTA> : <ButtonTA disabled={!flow.journey.canContinue || submitting} onClick={flow.actions.next}>{t('booking.next')} <ArrowRight className="size-4" /></ButtonTA>}</div>
     </>}
   </PremiumModal>
 }
 
-export const BookingModal = ({ open, ...props }: BookingModalProps) => open ? <BookingFlow {...props} /> : null
+export const BookingModal = ({ open, ...props }: BookingModalProps) => {
+  const { user } = useAuth()
+  const { identity } = useRequireAccount()
+  return open ? <BookingFlow key={identity.authenticated ? user?.id : 'guest'} {...props} /> : null
+}

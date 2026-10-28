@@ -36,6 +36,7 @@ class HttpService {
     }
 
     this.client.interceptors.request.use((config) => {
+      if (this.token && !this.isTokenValid()) this.clearToken()
       if (this.token && !config.headers.Authorization) config.headers.Authorization = `Bearer ${this.token}`
       return config
     })
@@ -50,11 +51,11 @@ class HttpService {
         this.showMutationError(error)
         if (error.response?.status === 401) {
           const url = error.config?.url || ''
-          // No redirigir si ya estamos en login o si el request era de auth
           const currentSession = this.token && error.config?.headers?.Authorization === `Bearer ${this.token}`
-          if (currentSession && !url.includes('/auth/login') && !window.location.pathname.includes('/login')) {
+          if (currentSession && !url.includes('/auth/login')) {
             this.clearToken()
-            window.location.href = `/login?${new URLSearchParams({ returnTo: `${window.location.pathname}${window.location.search}${window.location.hash}` })}`
+            const restoringSession = /^\/auth\/(?:me|refresh-token)(?:\?|$)/.test(url)
+            if (!restoringSession && !window.location.pathname.includes('/login')) window.location.href = `/login?${new URLSearchParams({ returnTo: `${window.location.pathname}${window.location.search}${window.location.hash}` })}`
           }
         }
         return Promise.reject(error)
@@ -204,12 +205,12 @@ export class AuthService {
   async logout() {
     const token = this.http.getToken()
     const pushDevice = localStorage.getItem('habitu_push_device_token')
-    if (token && pushDevice) {
-      try { await this.http.post('/v2/push/unregister', { token: pushDevice }) } catch { /* Signing out must remain available offline. */ }
-      localStorage.removeItem('habitu_push_device_token')
-      localStorage.removeItem('habitu_push_device_user')
-    }
     this.http.clearToken()
+    localStorage.removeItem('habitu_push_device_token')
+    localStorage.removeItem('habitu_push_device_user')
+    if (token && pushDevice) {
+      try { await this.http.post('/v2/push/unregister', { token: pushDevice }, { headers: { Authorization: `Bearer ${token}` } }) } catch { /* Signing out must remain available offline. */ }
+    }
     if (token) await this.http.post('/auth/logout', {}, { headers: { Authorization: `Bearer ${token}` } })
   }
 

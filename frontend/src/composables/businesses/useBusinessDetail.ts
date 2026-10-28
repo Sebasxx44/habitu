@@ -1,7 +1,7 @@
 import { useRealtimeRevision } from '@/modules/realtime/useRealtimeRefresh';
 import { t } from 'i18next'
 import { useEffect, useRef, useState } from "react";
-import { businessService } from "@/services/business/businessService";
+import { publicBusinessService } from "@/services/business/publicBusinessService";
 import type {
   BusinessDetailState,
   BusinessProfile,
@@ -29,7 +29,7 @@ export const useBusinessDetail = (id: number): BusinessDetailState => {
       setLoading(false);
       return;
     }
-    businessService
+    publicBusinessService
       .getById(id)
       .then((profile) => {
         if (active) { loadedId.current = id; setData(profile); }

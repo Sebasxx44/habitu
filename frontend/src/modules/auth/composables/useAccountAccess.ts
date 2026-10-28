@@ -6,8 +6,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { accountAccessService } from "@/modules/auth/services/accountAccessService";
 import {
   accountPath,
-  safeReturnPath,
 } from "@/modules/auth/services/returnPath";
+import { authenticatedDestination } from "@/modules/auth/services/routeAccess";
 import type {
   AccountAccessFields,
   AccountAccessFieldErrors,
@@ -65,7 +65,7 @@ export const useAccountAccess = (
         await accountAccessService.register(value);
         await refreshUser();
         navigate(
-          safeReturnPath(params.get("returnTo")) ?? "/cliente/dashboard",
+          authenticatedDestination("CLIENTE", params.get("returnTo")),
           { replace: true },
         );
       } else {

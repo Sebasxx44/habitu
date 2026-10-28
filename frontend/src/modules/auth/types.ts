@@ -1,6 +1,11 @@
 import type { FormEvent, RefObject } from "react";
 
 // TYPES
+export interface RequireAccountResult {
+  identity: { authenticated: boolean };
+  actions: { requireAccount: (returnTo?: string) => boolean };
+}
+
 export type LoginStep = "credentials" | "password" | "twoFactor";
 export type LoginProvider = "credentials" | "google";
 export type AccountAccessMode = "register" | "forgot" | "reset";

@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import type { User } from '@/types/auth'
 import { navigationByRole } from '@/components/TA/navigation'
+import { authenticatedDestination, guestHome, loginPath, roleHome } from '@/modules/auth/services/routeAccess'
 export { useAuth, useNotifications } from '@/contexts/AuthContext'
 import { AppLayout } from '@/components/layout/AppLayout'
 const PayoutSandboxPage = lazy(() => import('@/modules/payouts/PayoutSandboxPage').then(module => ({ default: module.PayoutSandboxPage })))
@@ -92,7 +93,7 @@ const ProtectedRoute = ({ children, roles }: { children: ReactNode; roles?: User
       <LoadingTA label="Verificando sesión…" />
     </div>
   )
-  if (!user) return <Navigate to={`/login?returnTo=${encodeURIComponent(location.pathname + location.search + location.hash)}`} replace />
+  if (!user) return <Navigate to={loginPath(location.pathname + location.search + location.hash)} replace />
   if (roles && !roles.includes(user.role)) return <Navigate to="/" replace />
   const permission = navigationByRole[user.role].find(item => item.path === location.pathname || location.pathname.startsWith(`${item.path}/`))?.permission
   if (user.role !== 'SUPERADMIN' && permission && !permissions.includes(permission)) return <Navigate to="/" replace />
@@ -104,14 +105,28 @@ const PageWrapper = ({ children }: { children: ReactNode }) => {
   return <AppLayout user={user}><Suspense fallback={<SkeletonTA variant="dashboard" label="Cargando tu espacio…" />}>{children}</Suspense></AppLayout>
 }
 
+const AccountEntry = ({ children }: { children: ReactNode }) => {
+  const { user, loading } = useAuth()
+  const location = useLocation()
+  if (loading) return <PageLoading />
+  if (user) return <Navigate to={authenticatedDestination(user.role, new URLSearchParams(location.search).get('returnTo'))} replace />
+  return children
+}
+
+const ClientHome = () => {
+  const { user, loading } = useAuth()
+  if (loading) return <PageLoading />
+  if (!user) return <Navigate to={guestHome} replace />
+  return <ProtectedRoute roles={['CLIENTE']}><PageWrapper><ClienteDashboardPage /></PageWrapper></ProtectedRoute>
+}
+
 import { RealtimeProvider } from '@/modules/realtime/RealtimeProvider'
 import { ThemeProvider } from '@/components/theme-provider'
 
 const HomeRedirect = () => {
   const { user, loading } = useAuth()
   if (loading) return <PageLoading />
-  const routes = { SUPERADMIN: '/superadmin/dashboard', ADMIN_BARBERIA: '/admin/dashboard', PROFESSIONAL: '/professional/dashboard', CLIENTE: '/cliente/dashboard' }
-  return <Navigate to={user ? routes[user.role] : '/login'} replace />
+  return <Navigate to={user ? roleHome(user.role) : guestHome} replace />
 }
 
 const PageLoading = () => <div className="app-canvas min-h-screen p-4 sm:p-8"><div className="mx-auto max-w-7xl space-y-6"><LoadingTA compact label="Cargando tu espacio…" /><SkeletonTA variant="dashboard" /></div></div>
@@ -131,12 +146,12 @@ const App = () => {
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/account/profile" element={<ProtectedRoute><PageWrapper><ClienteProfilePage /></PageWrapper></ProtectedRoute>} />
-            <Route path="/register" element={<AccountAccessPage mode="register" />} />
+            <Route path="/register" element={<AccountEntry><AccountAccessPage mode="register" /></AccountEntry>} />
             <Route path="/forgot-password" element={<AccountAccessPage mode="forgot" />} />
             <Route path="/reset-password" element={<AccountAccessPage mode="reset" />} />
             <Route path="/admin/operations" element={<ProtectedRoute roles={['ADMIN_BARBERIA']}><PageWrapper><OperationsPage /></PageWrapper></ProtectedRoute>} />
             <Route path="/professional/availability" element={<ProtectedRoute roles={['PROFESSIONAL']}><PageWrapper><OperationsPage /></PageWrapper></ProtectedRoute>} />
-            <Route path="/login" element={<LoginPage />} />
+            <Route path="/login" element={<AccountEntry><LoginPage /></AccountEntry>} />
             <Route path="/superadmin/dashboard" element={<ProtectedRoute roles={['SUPERADMIN']}><PageWrapper><SuperAdminDashboard /></PageWrapper></ProtectedRoute>} />
             <Route path="/superadmin/businesses" element={<ProtectedRoute roles={['SUPERADMIN']}><PageWrapper><BusinessesPage /></PageWrapper></ProtectedRoute>} />
             <Route path="/superadmin/businesses/:id/analytics" element={<ProtectedRoute roles={['SUPERADMIN']}><PageWrapper><BusinessAnalyticsPage /></PageWrapper></ProtectedRoute>} />
@@ -188,20 +203,20 @@ const App = () => {
             <Route path="/professional/security" element={<ProtectedRoute roles={['PROFESSIONAL']}><PageWrapper><TwoFactorSetupPage /></PageWrapper></ProtectedRoute>} />
             <Route path="/barbero/dashboard" element={<Navigate to="/professional/dashboard" />} />
             <Route path="/barbero/appointments" element={<Navigate to="/professional/appointments" />} />
-            <Route path="/cliente/dashboard" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><ClienteDashboardPage /></PageWrapper></ProtectedRoute>} />
-            <Route path="/cliente/explore" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><ExploreBusinessesPage /></PageWrapper></ProtectedRoute>} />
+            <Route path="/cliente/dashboard" element={<ClientHome />} />
+            <Route path="/cliente/explore" element={<PageWrapper><ExploreBusinessesPage /></PageWrapper>} />
             <Route path="/cliente/explorar" element={<Navigate to="/cliente/explore" />} />
-            <Route path="/cliente/booking" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><ClienteBookingPage /></PageWrapper></ProtectedRoute>} />
+            <Route path="/cliente/booking" element={<PageWrapper><ClienteBookingPage /></PageWrapper>} />
             <Route path="/cliente/benefits" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><BenefitsPage /></PageWrapper></ProtectedRoute>} />
             <Route path="/cliente/loyalty" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><ClienteLoyaltyPage /></PageWrapper></ProtectedRoute>} />
             <Route path="/cliente/appointments" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><ClienteAppointmentsPage /></PageWrapper></ProtectedRoute>} />
             <Route path="/cliente/appointments/:id" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><AppointmentDetailPage /></PageWrapper></ProtectedRoute>} />
             <Route path="/cliente/profile" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><ClienteProfilePage /></PageWrapper></ProtectedRoute>} />
-            <Route path="/cliente/business/:id" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><BusinessDetailPage /></PageWrapper></ProtectedRoute>} />
-            <Route path="/cliente/shop/:id" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><BusinessDetailPage /></PageWrapper></ProtectedRoute>} />
+            <Route path="/cliente/business/:id" element={<PageWrapper><BusinessDetailPage /></PageWrapper>} />
+            <Route path="/cliente/shop/:id" element={<PageWrapper><BusinessDetailPage /></PageWrapper>} />
             <Route path="/cliente/notifications" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><ClienteNotificationsPage /></PageWrapper></ProtectedRoute>} />
             {/* New Premium Routes */}
-            <Route path="/cliente/services" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><ClienteBookingPage /></PageWrapper></ProtectedRoute>} />
+            <Route path="/cliente/services" element={<PageWrapper><ClienteBookingPage /></PageWrapper>} />
             <Route path="/cliente/messages" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><AIChatPage /></PageWrapper></ProtectedRoute>} />
             <Route path="/cliente/checkout/:orderId" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><CheckoutReturnPage /></PageWrapper></ProtectedRoute>} />
             <Route path="/cliente/routines" element={<ProtectedRoute roles={['CLIENTE']}><PageWrapper><RoutinesPage /></PageWrapper></ProtectedRoute>} />

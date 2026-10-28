@@ -17,7 +17,7 @@ export const bookingAvailabilityService = {
   ): Promise<BookingAvailability> => {
     const response = await httpService.get<
       BookingApiResponse<BookingAvailability>
-    >("/v2/appointments/availability", { params: request, signal });
+    >(request.appointment_id != null ? "/v2/appointments/availability" : "/v2/public/availability", { params: request, signal });
     return response.data;
   },
   quote: async (request: BookingQuoteRequest, signal: AbortSignal): Promise<BookingQuote> => {

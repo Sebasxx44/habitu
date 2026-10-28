@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   ArrowUpRight,
   CalendarDays,
@@ -28,7 +28,6 @@ export const ProfilePage = () => {
   const { t } = useTranslation("profile");
   const { account, changes } = useProfile();
   const { logout } = useAuth();
-  const navigate = useNavigate();
   const file = useRef<HTMLInputElement>(null);
   const data = account.data;
   return (
@@ -148,10 +147,7 @@ export const ProfilePage = () => {
             <ButtonTA
               variant="ghost"
               className="w-full justify-start text-muted-foreground"
-              onClick={() => {
-                logout();
-                navigate("/login");
-              }}
+              onClick={logout}
             >
               <LogOut className="size-4" />
               {t("logout")}

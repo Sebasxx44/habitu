@@ -12,9 +12,21 @@ export const safeReturnPath = (value: string | null): string | null => {
   )
     return null;
   const path = value.split(/[?#]/)[0];
+  let decodedPath: string;
+  try {
+    decodedPath = decodeURIComponent(path);
+  } catch {
+    return null;
+  }
+  if (
+    decodedPath.startsWith("//") ||
+    decodedPath.includes("\\") ||
+    /(?:^|\/)\.{1,2}(?:\/|$)/.test(decodedPath) ||
+    [...decodedPath].some((character) => character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127)
+  ) return null;
   if (
     ["/login", "/register", "/forgot-password", "/reset-password"].includes(
-      path,
+      decodedPath,
     )
   )
     return null;

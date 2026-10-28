@@ -1,5 +1,8 @@
 import { useRef, useState } from "react";
 import { httpService } from "@/services/auth/authService";
+import { useRequireAccount } from "@/modules/auth/composables/useRequireAccount";
+import { bookingResumePath } from "@/composables/booking/resumePath";
+import { useAuth } from "@/contexts/AuthContext";
 import type {
   BookingApiResponse,
   BookingRequest,
@@ -17,17 +20,29 @@ export const useAvailabilityAlert = (
   from: string,
   to: string,
 ): AvailabilityAlertState => {
+  // SERVICES
+  const { identity, actions: account } = useRequireAccount();
+  const { user } = useAuth();
   // STATE
-  const [saved, setSaved] = useState<{ key: string; id: number } | null>(null);
+  const [saved, setSaved] = useState<{ key: string; id: number; accountId: number } | null>(null);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
   const lock = useRef(false);
   const key = JSON.stringify([request, from, to]);
-  const active = saved?.key === key;
+  const active = identity.authenticated && saved?.accountId === user?.id && saved?.key === key;
 
   // ACTIONS
   const subscribe = async () => {
     if (!request || lock.current || active) return;
+    if (!account.requireAccount(bookingResumePath(request.business_id, {
+      serviceId: request.service_id,
+      branchId: request.branch_id,
+      professionalId: request.professional_id,
+      resourceId: request.resource_id,
+      date: request.date,
+      durationMinutes: request.duration_minutes,
+      participants: request.participants,
+    })) || !user) return;
     lock.current = true;
     setBusy(true);
     setFailed(false);
@@ -42,7 +57,7 @@ export const useAvailabilityAlert = (
           preferred_time_end: to || undefined,
         },
       );
-      setSaved({ key, id: result.data.id });
+      setSaved({ key, id: result.data.id, accountId: user.id });
     } catch {
       setFailed(true);
     } finally {
@@ -52,6 +67,7 @@ export const useAvailabilityAlert = (
   };
   const cancel = async () => {
     if (!active || !saved || lock.current) return;
+    if (!account.requireAccount()) return;
     lock.current = true;
     setBusy(true);
     setFailed(false);

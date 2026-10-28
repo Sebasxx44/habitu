@@ -327,6 +327,16 @@ export const primaryClientNavigation = (permissions: string[]): NavigationItem[]
   return paths.flatMap(path => items.filter(item => item.path === path))
 }
 
+export const guestNavigation = (): NavigationItem[] => {
+  const items = visibleNavigation('CLIENTE', ['appointments.view'])
+  const paths = ['/cliente/explore', '/cliente/appointments', '/cliente/favorites']
+  return [
+    ...items.filter(item => item.path === '/cliente/explore'),
+    { label: i18n.t('navigation.services'), path: '/cliente/services', icon: ClipboardList, group: 'workspace' },
+    ...items.filter(item => paths.includes(item.path) && item.path !== '/cliente/explore'),
+  ]
+}
+
 export const accountPaths: Record<User["role"], string> = {
   CLIENTE: "/cliente/profile",
   ADMIN_BARBERIA: "/admin/business",

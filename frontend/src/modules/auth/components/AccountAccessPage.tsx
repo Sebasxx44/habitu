@@ -12,6 +12,7 @@ import { GoogleSignInTA } from "@/modules/auth/components/GoogleSignInTA";
 import { LoginFieldsTA } from "@/modules/auth/components/LoginFieldsTA";
 import type { AccountAccessMode } from "@/modules/auth/types";
 import { LegalLinksTA } from "@/modules/legal/LegalLinksTA";
+import { guestHome } from "@/modules/auth/services/routeAccess";
 
 // COMPONENT
 export const AccountAccessPage = ({ mode }: { mode: AccountAccessMode }) => {
@@ -150,6 +151,7 @@ export const AccountAccessPage = ({ mode }: { mode: AccountAccessMode }) => {
         <LinkButtonTA to={links.login} variant="ghost" className="w-full">
           {t("back")}
         </LinkButtonTA>
+        <LinkButtonTA to={guestHome} variant="ghost" className="w-full text-xs">{t("browse")}</LinkButtonTA>
         {mode === "reset" && (
           <LinkButtonTA to={links.forgot} variant="ghost" className="w-full">
             {t("forgotLink")}

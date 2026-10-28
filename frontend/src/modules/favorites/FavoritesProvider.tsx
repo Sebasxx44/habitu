@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { favoriteService } from "@/modules/favorites/favoriteService";
+import { useRequireAccount } from "@/modules/auth/composables/useRequireAccount";
 import type {
   FavoriteIds,
   FavoritesState,
@@ -29,7 +30,9 @@ export const FavoritesProvider = ({
 }) => {
   const realtimeRevision = useRealtimeRevision(["favorites"]);
   const { t } = useTranslation();
+  const { actions: account } = useRequireAccount();
   const [ids, setIds] = useState<FavoriteIds>(empty);
+  const [accountId, setAccountId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [pending, setPending] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -41,8 +44,10 @@ export const FavoritesProvider = ({
   useEffect(() => {
     const controller = new AbortController();
     generation.current += 1;
+    const requestGeneration = generation.current;
     setLoading(true);
     setIds(empty);
+    setAccountId(userId);
     setError("");
     if (!userId) {
       setLoading(false);
@@ -50,12 +55,14 @@ export const FavoritesProvider = ({
     }
     favoriteService
       .identifiers(controller.signal)
-      .then(setIds)
+      .then((nextIds) => {
+        if (!controller.signal.aborted && requestGeneration === generation.current) setIds(nextIds);
+      })
       .catch(() => {
-        if (!controller.signal.aborted) setError(t("favorites.loadError"));
+        if (!controller.signal.aborted && requestGeneration === generation.current) setError(t("favorites.loadError"));
       })
       .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
+        if (!controller.signal.aborted && requestGeneration === generation.current) setLoading(false);
       });
     return () => {
       controller.abort();
@@ -69,7 +76,8 @@ export const FavoritesProvider = ({
     id: number,
     saved: boolean,
   ): Promise<boolean> => {
-    if (!userId || loading || locked.current) return false;
+    if (!account.requireAccount()) return false;
+    if (!userId || accountId !== userId || loading || locked.current) return false;
     locked.current = true;
     setPending(`${type}:${id}`);
     setError("");
@@ -102,7 +110,7 @@ export const FavoritesProvider = ({
   return (
     <FavoritesContext.Provider
       value={{
-        state: { ids, loading, pending, error },
+        state: { ids: userId && accountId === userId ? ids : empty, loading: Boolean(userId) && (accountId !== userId || loading), pending: userId ? pending : null, error: userId ? error : "" },
         actions: { toggle, remove, retry },
       }}
     >

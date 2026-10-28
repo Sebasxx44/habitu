@@ -127,6 +127,10 @@ export interface BookingService extends Service { professionals?: BookingProfess
 export interface BookingBranch extends Branch { schedules?: { day: number | string; open_time: string; close_time: string; is_closed: boolean }[] }
 export interface BookingPromotion { id: number; title: string; description?: string; promo_code?: string; discount: number | string; type: string; start_date: string; end_date: string; is_active: boolean; services?: { id: number }[] }
 export interface BookingContext { serviceId?: number; professionalId?: number; branchId?: number; resourceId?: number; date?: string; time?: string; promoCode?: string; durationMinutes?: number; participants?: number; source?: 'marketplace' | 'assistant' | 'express' }
+export interface BookingAccountState {
+  identity: { authenticated: boolean; canBook: boolean };
+  actions: { requireAccount: () => boolean };
+}
 export type BookingStep = 'service' | 'professional' | 'datetime' | 'review';
 export interface BookingSelection { serviceId: number | null; professionalId: number | null; resourceId: number | null; branchId: number | null; date: string; time: string; durationMinutes: number; participants: number }
 export interface BookingQuoteRequest extends BookingRequest { start_time: string; promo_code?: string }

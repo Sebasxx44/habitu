@@ -1,5 +1,9 @@
 // TRANSLATIONS
 export const authUiEs = {
+  signIn: "Ingresar",
+  guest: "Estás explorando como visitante",
+  browse: "Seguir explorando sin cuenta",
+  actionAccess: "Ingresa o crea tu cuenta para continuar. Tu selección se conservará.",
   registerTitle: "Crea tu cuenta.",
   registerDescription: "Descubre servicios, espacios y experiencias a tu ritmo.",
   forgotTitle: "Recupera tu acceso.",
@@ -65,6 +69,10 @@ export const authUiEs = {
 };
 
 export const authUiEn: typeof authUiEs = {
+  signIn: "Sign in",
+  guest: "You are browsing as a guest",
+  browse: "Continue browsing without an account",
+  actionAccess: "Sign in or create an account to continue. Your selection will be kept.",
   registerTitle: "Create your account.",
   registerDescription: "Discover services, spaces and experiences at your own pace.",
   forgotTitle: "Recover your access.",

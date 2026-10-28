@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom'
 import { LinkButtonTA } from '@/components/TA/LinkButtonTA'
 import { accountPath } from '@/modules/auth/services/returnPath'
+import { browseDestination } from '@/modules/auth/services/routeAccess'
 import { ArrowLeft, ArrowRight, ArrowUpRight, CircleAlert, Loader2, ShieldCheck, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher'
@@ -23,7 +24,8 @@ export const LoginPage = () => {
   // COMPUTED
   const isChallenge = feedback.step !== 'credentials'
   const title = feedback.step === 'twoFactor' ? t('twoFactorTitle') : feedback.step === 'password' ? t('passwordTitle') : t('title')
-  const description = feedback.step === 'twoFactor' ? t('twoFactorDescription') : feedback.step === 'password' ? t('passwordDescription') : t('description')
+  const returnTo = new URLSearchParams(location.search).get('returnTo')
+  const description = feedback.step === 'twoFactor' ? t('twoFactorDescription') : feedback.step === 'password' ? t('passwordDescription') : returnTo ? t('actionAccess') : t('description')
 
   return (
     <main className="auth-page relative isolate flex min-h-svh flex-col overflow-hidden bg-background text-foreground">
@@ -65,6 +67,7 @@ export const LoginPage = () => {
             </form>
             {!isChallenge && <div className="mt-4 flex flex-col gap-1"><LinkButtonTA variant="ghost" to={accountPath('/register', location.search)}>{t('registerLink')}</LinkButtonTA><LinkButtonTA variant="ghost" to={accountPath('/forgot-password', location.search)}>{t('forgotLink')}</LinkButtonTA></div>}
             {!isChallenge && <GoogleSignInTA onCredential={actions.signInWithGoogle} disabled={feedback.loading} />}
+            <LinkButtonTA variant="ghost" to={browseDestination(returnTo)} className="mt-3 w-full text-xs">{t('browse')}</LinkButtonTA>
           </div>
           <p className="mt-6 flex items-center justify-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="size-3.5" aria-hidden="true" />{t('security')}</p>
           <div className="mt-3"><LegalLinksTA /></div>

@@ -91,3 +91,105 @@ test("cancelar una sesión invalida un login que seguía pendiente", async () =>
   await rejection;
   assert.equal(storage.get("eb_token"), undefined);
 });
+
+test("un token vencido en auth/me se limpia sin sacar al visitante del catálogo", async () => {
+  window.location = {
+    pathname: "/cliente/explore",
+    search: "?q=café&category_id=2",
+    hash: "#mapa",
+    href: "",
+  };
+  httpService.setToken("expired-visitor-session");
+  const response = httpService.get("/auth/me");
+  const rejection = assert.rejects(response);
+  const request = await nextRequest("/auth/me");
+  request.reject(new AxiosError("Expired", "ERR_BAD_REQUEST", request.config, null, {
+    status: 401,
+    statusText: "Unauthorized",
+    data: {},
+    headers: {},
+    config: request.config,
+  }));
+  await rejection;
+  assert.equal(storage.get("eb_token"), undefined);
+  assert.equal(storage.get("eb_token_expiry"), undefined);
+  assert.equal(window.location.href, "");
+});
+
+test("una renovación rechazada limpia la sesión sin redirigir la navegación pública", async () => {
+  window.location = {
+    pathname: "/cliente/business/42",
+    search: "?service_id=7",
+    hash: "#servicios",
+    href: "",
+  };
+  httpService.setToken("expired-refresh-session");
+  const response = authService.refreshToken();
+  const rejection = assert.rejects(response);
+  const request = await nextRequest("/auth/refresh-token");
+  request.reject(new AxiosError("Expired", "ERR_BAD_REQUEST", request.config, null, {
+    status: 401,
+    statusText: "Unauthorized",
+    data: {},
+    headers: {},
+    config: request.config,
+  }));
+  await rejection;
+  assert.equal(storage.get("eb_token"), undefined);
+  assert.equal(window.location.href, "");
+});
+
+test("un 401 privado conserva el acceso requerido y toda la ruta de regreso", async () => {
+  window.location = {
+    pathname: "/cliente/appointments/14",
+    search: "?tab=details&source=calendar",
+    hash: "#reserva",
+    href: "",
+  };
+  httpService.setToken("expired-private-session");
+  const response = httpService.get("/v2/appointments/14");
+  const rejection = assert.rejects(response);
+  const request = await nextRequest("/v2/appointments/14");
+  request.reject(new AxiosError("Expired", "ERR_BAD_REQUEST", request.config, null, {
+    status: 401,
+    statusText: "Unauthorized",
+    data: {},
+    headers: {},
+    config: request.config,
+  }));
+  await rejection;
+  assert.equal(storage.get("eb_token"), undefined);
+  const destination = new URL(window.location.href, "https://habitu.test");
+  assert.equal(destination.pathname, "/login");
+  assert.equal(
+    destination.searchParams.get("returnTo"),
+    "/cliente/appointments/14?tab=details&source=calendar#reserva",
+  );
+});
+
+test("un logout con push pendiente no borra el login ni el dispositivo de la nueva sesión", async () => {
+  httpService.setToken("old-push-session");
+  storage.set("habitu_push_device_token", "old-push-device");
+  storage.set("habitu_push_device_user", "old-user");
+  const logout = authService.logout();
+  assert.equal(storage.get("eb_token"), undefined);
+  assert.equal(storage.get("habitu_push_device_token"), undefined);
+  assert.equal(storage.get("habitu_push_device_user"), undefined);
+
+  const unregister = await nextRequest("/v2/push/unregister");
+  assert.equal(unregister.config.headers.Authorization, "Bearer old-push-session");
+  assert.equal(JSON.parse(unregister.config.data).token, "old-push-device");
+
+  httpService.setToken("new-push-session");
+  storage.set("habitu_push_device_token", "new-push-device");
+  storage.set("habitu_push_device_user", "new-user");
+  resolve(unregister);
+  const revoke = await nextRequest("/auth/logout");
+  assert.equal(revoke.config.headers.Authorization, "Bearer old-push-session");
+  resolve(revoke);
+  await logout;
+
+  assert.equal(storage.get("eb_token"), "new-push-session");
+  assert.equal(storage.get("habitu_push_device_token"), "new-push-device");
+  assert.equal(storage.get("habitu_push_device_user"), "new-user");
+});

@@ -17,6 +17,7 @@ import { useDiscoverySearch } from '@/modules/discovery/composables/useDiscovery
 import { discoveryDay } from '@/modules/discovery/query'
 import { useBusinessCategories } from '@/hooks/useBusinessCategories'
 import { cn } from '@/lib/utils'
+import { useRequireAccount } from '@/modules/auth/composables/useRequireAccount'
 
 // COMPONENTS
 const ShopsMap = lazy(() => import('@/components/ShopsMap').then((module) => ({ default: module.ShopsMap })))
@@ -28,6 +29,7 @@ export const ExploreShopsPage = () => {
   // COMPOSABLES
   const { results, filters, search, location, favorites } = useDiscoverySearch()
   const { categories, error: categoryError } = useBusinessCategories()
+  const { identity } = useRequireAccount()
   const [params] = useSearchParams()
   const navigate = useNavigate()
   // STATE
@@ -72,7 +74,7 @@ export const ExploreShopsPage = () => {
       {view === 'map' && <aside className="sticky top-5 min-w-0"><div className="h-[62dvh] min-h-[380px] max-h-[740px]"><Suspense fallback={<LoadingTA label={ui('loadingMap')} className="h-full rounded-2xl bg-primary/5" />}><ShopsMap shops={results.page.data} selectedShopId={selectedId} userLocation={location.point} radius={location.point ? Number(filters.values.radius) : undefined} onSelectShop={(shop) => setSelectedId(shop.id)} onOpenShop={(shop) => navigate(`/cliente/business/${shop.id}`)} /></Suspense></div>{selected && <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-4"><div className="min-w-0"><p className="truncate text-sm font-semibold">{selected.name}</p><p className="mt-1 truncate text-xs text-muted-foreground">{selected.main_branch?.address || selected.address}</p></div><ButtonTA render={<Link to={`/cliente/business/${selected.id}`} />} nativeButton={false} variant="outline" className="text-xs">{ui('viewPlace')}<ArrowRight className="size-3.5" /></ButtonTA></div>}<p className="mt-2 px-1 text-[10px] text-muted-foreground">{ui('mapDescription')}</p></aside>}
     </div>}
     {!results.loading && !results.error && results.page.last_page > 1 && <nav aria-label={ui('pagination')} className="flex items-center justify-center gap-4 pt-4"><ButtonTA variant="outline" disabled={results.page.current_page <= 1} onClick={() => filters.change({ page: String(results.page.current_page - 1) })}>{ui('previous')}</ButtonTA><span className="text-xs text-muted-foreground">{ui('pageOf', { page: results.page.current_page, total: results.page.last_page })}</span><ButtonTA variant="outline" disabled={results.page.current_page >= results.page.last_page} onClick={() => filters.change({ page: String(results.page.current_page + 1) })}>{ui('next')}</ButtonTA></nav>}
-    <AnalyticsPreferencesTA />
+    {identity.authenticated && <AnalyticsPreferencesTA />}
     <DiscoveryFiltersTA open={showFilters} onClose={() => setShowFilters(false)} filters={filters} categories={categories} hasLocation={!!location.point} />
   </div>
 }
